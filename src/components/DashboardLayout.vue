@@ -58,6 +58,10 @@ export default {
       items: [
         { title: "Dashboard", icon: "space_dashboard", to: "/dashboard" },
         { title: "Karyawan", icon: "badge", to: "/karyawan" },
+        { title: "Meja", icon: "deck", to: "/meja" },
+        { title: "Customer", icon: "people", to: "/customer" },
+        { title: "Menu", icon: "restaurant_menu", to: "/menu" },
+        { title: "Stok Bahan", icon: "inventory", to: "/stokBahan" },
       ],
     };
   },

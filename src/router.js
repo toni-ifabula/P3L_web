@@ -30,19 +30,33 @@ const router = new VueRouter({
                     meta: {title: 'Karyawan'},
                     component: importComponent('Karyawan'),
                 },
-                //PROFILE
+                // Customer
                 {
-                    path: "/profile",
-                    name: "Profile",
-                    meta: {title: 'Profile'},
-                    component: importComponent('DataMaster/Profile'),
+                    path: "/customer",
+                    name: "Customer",
+                    meta: {title: 'Customer'},
+                    component: importComponent('Customer'),
                 },
-                // PROFILE IMAGE
+                // Meja
                 {
-                    path: "/profileImage",
-                    name: "ProfileImage",
-                    meta: {title: 'ProfileImage'},
-                    component: importComponent('DataMaster/ProfileImage'),
+                    path: "/meja",
+                    name: "Meja",
+                    meta: {title: 'Meja'},
+                    component: importComponent('Meja'),
+                },
+                //Menu
+                {
+                    path: "/menu",
+                    name: "Menu",
+                    meta: {title: 'Menu'},
+                    component: importComponent('Menu'),
+                },
+                // Stok Bahan
+                {
+                    path: "/stokBahan",
+                    name: "StokBahan",
+                    meta: {title: 'Stok Bahan'},
+                    component: importComponent('StokBahan'),
                 },
             ],
             beforeEnter: (to, from, next) => {

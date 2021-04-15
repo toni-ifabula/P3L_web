@@ -2,7 +2,7 @@
 
 <template>
   <v-main class="list">
-    <h3 class="text-h3 font-weight-medium mb-5"> Data Karyawan </h3>
+    <h3 class="text-h3 font-weight-medium mb-5"> Data Menu </h3>
 
     <v-card>
       <v-card-title>
@@ -12,22 +12,13 @@
           Tambah
         </v-btn>
       </v-card-title>
-      <v-data-table :headers="headers" :items="karyawan" :search="search">
-        <template v-slot:[`item.STATUS_KARYAWAN`]="{ item }">
-          <v-chip
-            :color="getStatusColor(item.STATUS_KARYAWAN)"
-            dark
-          >
-            {{ item.STATUS_KARYAWAN }}
-          </v-chip>
-        </template>
-
+      <v-data-table :headers="headers" :items="menu" :search="search">
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
             edit
           </v-btn>
-          <v-btn small @click="resignStatus(item.ID_KARYAWAN)" color="orange">
-            Nonaktifkan
+          <v-btn small @click="deleteHandler(item.ID_MENU)" color="red">
+            delete
           </v-btn>
         </template>
       </v-data-table>
@@ -36,43 +27,35 @@
     <v-dialog v-model="dialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">{{ formTitle }} Data Karyawan</span>
+          <span class="headline">{{ formTitle }} Data Menu</span>
         </v-card-title>
 
         <v-card-text>
           <v-container>
-            <v-text-field v-model="form.nama_karyawan" label="Nama Karyawan" required></v-text-field>
+            <v-text-field v-model="form.nama" label="Nama Menu" required></v-text-field>
 
             <v-select
-              v-model="form.role"
-              :items="roleItems"
-              label="Role"
+              v-model="form.bahan"
+              :items="bahanItems"
+              label="Bahan"
             ></v-select>
 
             <v-select
-              v-model="form.jenis_kelamin"
-              :items="jenisKelaminItems"
-              label="Jenis Kelamin"
+              v-model="form.kategori"
+              :items="kategoriItems"
+              label="Kategori"
             ></v-select>
 
-            <v-text-field v-model="form.telepon" label="Telepon" required></v-text-field>
-
-            <v-text-field v-model="form.email" label="Email" required></v-text-field>
-
-            <v-text-field v-model="form.password" label="Password" required></v-text-field>
-
-            <v-text-field v-model="form.tanggal_gabung" label="Tanggal Gabung" required></v-text-field>
-            
-            <v-date-picker
-              v-model="form.tanggal_gabung"
-              color="green lighten-1"
-            ></v-date-picker>
+            <v-text-field v-model="form.deskripsi" label="Deskripsi" required></v-text-field>
 
             <v-select
-              v-model="form.status"
-              :items="statusItems"
-              label="Status"
+              v-model="form.unit"
+              :items="unitItems"
+              label="Unit"
             ></v-select>
+
+            <v-text-field v-model="form.harga" label="Harga" required></v-text-field>
+
           </v-container>
         </v-card-text>
 
@@ -83,6 +66,26 @@
           </v-btn>
           <v-btn color="blue darken-1" text @click="setForm">
             Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogConfirm" persistent max-width="400px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">warning!</span>
+        </v-card-title>
+        <v-card-text>
+          Anda yakin ingin menghapus menu ini?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="dialogConfirm = false">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="deleteData">
+            Delete
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -108,56 +111,51 @@
         dialog: false,
         dialogConfirm: false,
         headers: [{
-            text: "Nama Karyawan",
+            text: "Nama Menu",
             align: "start",
             sortable: true,
-            value: "NAMA_KARYAWAN"
+            value: "NAMA_MENU"
           },
           {
-            text: "Role",
-            value: "ID_ROLE"
+            text: "Bahan",
+            value: "ID_STOK"
           },
           {
-            text: "Jenis Kelamin",
-            value: "JENIS_KELAMIN_KARYAWAN"
+            text: "Kategori",
+            value: "KATEGORI_MENU"
           },
           {
-            text: "Telepon",
-            value: "TELEPON_KARYAWAN"
+            text: "Deskripsi",
+            value: "DESKRIPSI_MENU"
           },
           {
-            text: "Email",
-            value: "email"
+            text: "Unit",
+            value: "UNIT_MENU"
           },
           {
-            text: "Tanggal Gabung",
-            value: "TANGGAL_GABUNG_KARYAWAN"
-          },
-          {
-            text: "Status",
-            value: "STATUS_KARYAWAN"
+            text: "Harga",
+            value: "HARGA_MENU"
           },
           {
             text: "Actions",
             value: "actions"
           },
         ],
-        karyawanFormData: new FormData,
-        karyawan: [],
+        menuFormData: new FormData,
+        menu: [],
         form: {
-          nama_karyawan: null,
-          role: null,
-          jenis_kelamin: null,
-          telepon: null,
-          email: null,
-          password: null,
-          tanggal_gabung: null,
-          status: null,
+          nama: null,
+          bahan: null,
+          kategori: null,
+          deskripsi: null,
+          unit: null,
+          harga: null,
         },
         editId: '',
-        roleItems: ["1", "2", "3", "4", "5"],
-        jenisKelaminItems: ["Laki-laki", "Perempuan"],
-        statusItems: ["Aktif", "Resign"],
+        deleteId: '',
+        kategoriItems: ["Makanan Utama", "Makanan Side Dish", "Minuman"],
+        unitItems: ["Plate", "Bowl", "Mini Bowl", "Glass", "Bottle"],
+        bahanItems: ["1", "2", "3"],
       };
     },
     methods: {
@@ -170,29 +168,27 @@
       },
       //read data
       readData() {
-        var url = this.$api + '/karyawan'
+        var url = this.$api + '/menu'
         this.$http.get(url, {
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('current_token')
           }
         }).then(response => {
-          this.karyawan = response.data.data
+          this.menu = response.data.data
         })
       },
       //simpan data
       save() {
-        this.karyawanFormData.append('NAMA_KARYAWAN', this.form.nama_karyawan);
-        this.karyawanFormData.append('ID_ROLE', this.form.role);
-        this.karyawanFormData.append('JENIS_KELAMIN_KARYAWAN', this.form.jenis_kelamin);
-        this.karyawanFormData.append('TELEPON_KARYAWAN', this.form.telepon);
-        this.karyawanFormData.append('email', this.form.email);
-        this.karyawanFormData.append('password', this.form.password);
-        this.karyawanFormData.append('TANGGAL_GABUNG_KARYAWAN', this.form.tanggal_gabung);
-        this.karyawanFormData.append('STATUS_KARYAWAN', this.form.status);
+        this.menuFormData.append('NAMA_MENU', this.form.nama);
+        this.menuFormData.append('ID_STOK', this.form.bahan);
+        this.menuFormData.append('KATEGORI_MENU', this.form.kategori);
+        this.menuFormData.append('DESKRIPSI_MENU', this.form.deskripsi);
+        this.menuFormData.append('UNIT_MENU', this.form.unit);
+        this.menuFormData.append('HARGA_MENU', this.form.harga);
 
-        var url = this.$api + '/karyawan'
+        var url = this.$api + '/menu'
         this.load = true
-        this.$http.post(url, this.karyawanFormData, {
+        this.$http.post(url, this.menuFormData, {
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('current_token')
           }
@@ -214,16 +210,14 @@
       //ubah data
       update() {
         let newData = {
-          NAMA_KARYAWAN: this.form.nama_karyawan,
-          ID_ROLE: this.form.role,
-          JENIS_KELAMIN_KARYAWAN: this.form.jenis_kelamin,
-          TELEPON_KARYAWAN: this.form.telepon,
-          email: this.form.email,
-          password: this.form.password,
-          TANGGAL_GABUNG_KARYAWAN: this.form.tanggal_gabung,
-          STATUS_KARYAWAN: this.form.status
+          NAMA_MENU: this.form.nama,
+          ID_STOK: this.form.bahan,
+          KATEGORI_MENU: this.form.kategori,
+          DESKRIPSI_MENU: this.form.deskripsi,
+          UNIT_MENU: this.form.unit,
+          HARGA_MENU: this.form.harga,
         }
-        var url = this.$api + '/karyawan/' + this.editId;
+        var url = this.$api + '/menu/' + this.editId;
         this.load = true
         this.$http.put(url, newData, {
           headers: {
@@ -247,21 +241,21 @@
       },
       editHandler(item) {
         this.inputType = 'Ubah';
-        this.editId = item.ID_KARYAWAN;
-        this.form.nama_karyawan = item.NAMA_KARYAWAN;
-        this.form.role = item.ID_ROLE;
-        this.form.telepon = item.TELEPON_KARYAWAN;
-        this.form.jenis_kelamin = item.JENIS_KELAMIN_KARYAWAN;
-        this.form.email = item.email;
-        this.form.password = item.password;
-        this.form.tanggal_gabung = item.TANGGAL_GABUNG_KARYAWAN;
-        this.form.status = item.STATUS_KARYAWAN;
+        this.editId = item.ID_MENU;
+        this.form.nama = item.NAMA_MENU;
+        this.form.bahan = item.ID_STOK;
+        this.form.kategori = item.KATEGORI_MENU;
+        this.form.deskripsi = item.DESKRIPSI_MENU;
+        this.form.unit = item.UNIT_MENU;
+        this.form.harga = item.HARGA_MENU;
         this.dialog = true;
       },
-      resignStatus(resignID) {
-        var url = this.$api + '/resignKaryawan/'+ resignID;
-        this.load = true
-        this.$http.put(url, null, {
+      //hapus data
+      deleteData() {
+        //mengahapus data 
+        var url = this.$api + '/menu/' + this.deleteId;
+        //data dihapus berdasarkan id 
+        this.$http.delete(url, {
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('current_token')
           }
@@ -270,13 +264,21 @@
           this.color = "green"
           this.snackbar = true;
           this.load = false;
+          this.close();
           this.readData(); //mengambil data
+          this.resetForm();
+          this.inputType = 'Tambah';
+          this.dialogConfirm = false;
         }).catch(error => {
           this.error_message = error.response.data.message;
           this.color = "red"
           this.snackbar = true;
           this.load = false;
         })
+      },
+      deleteHandler(id) {
+        this.deleteId = id;
+        this.dialogConfirm = true;
       },
       close() {
         this.dialog = false
@@ -290,16 +292,13 @@
       },
       resetForm() {
         this.form = {
-          nama_karyawan: null,
-          role: null,
-          jenis_kelamin: null,
-          telepon: null,
+          nama: null,
+          bahan: null,
+          kategori: null,
+          deskripsi: null,
+          unit: null,
+          harga: null,
         };
-      },
-      getStatusColor (status) {
-        if (status === 'Resign') return 'red'
-        else if (status === 'Aktif') return 'green'
-        else return 'orange'
       },
     },
     computed: {
