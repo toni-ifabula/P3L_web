@@ -5,12 +5,12 @@
     <div v-if="haveAccess() == 0">
       <v-row justify="center">
         <h1>Tidak bisa diakses</h1>
-        <h2>Data customer hanya dapat diakses oleh waiter dan manager</h2>
+        <h2>Data reservasi hanya dapat diakses oleh waiter dan manager</h2>
       </v-row>
     </div>
 
     <div v-if="haveAccess() == 1">
-      <h3 class="text-h3 font-weight-medium mb-5"> Data Customer </h3>
+      <h3 class="text-h3 font-weight-medium mb-5"> Data Reservasi </h3>
 
       <v-card>
         <v-card-title>
@@ -20,12 +20,12 @@
             Tambah
           </v-btn>
         </v-card-title>
-        <v-data-table :headers="headers" :items="customer" :search="search">
+        <v-data-table :headers="headers" :items="reservasi" :search="search">
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
               edit
             </v-btn>
-            <v-btn small @click="deleteHandler(item.ID_CUSTOMER)" color="red">
+            <v-btn small @click="deleteHandler(item.ID_RESERVASI)" color="red">
               delete
             </v-btn>
           </template>
@@ -35,20 +35,27 @@
       <v-dialog v-model="dialog" max-width="600px">
         <v-card>
           <v-card-title>
-            <span class="headline">{{ formTitle }} Data Customer</span>
+            <span class="headline">{{ formTitle }} Data Reservasi</span>
           </v-card-title>
 
           <v-card-text>
             <v-container>
-              <v-text-field v-model="form.nama" label="Nama customer" required></v-text-field>
+              <v-text-field v-model="form.meja" label="ID Meja" required></v-text-field>
 
-              <v-text-field v-model="form.email" label="Email customer" :rules="[rules.required]"></v-text-field>
+              <v-text-field v-model="form.customer" label="ID Customer" :rules="[rules.required]"></v-text-field>
 
-              <v-text-field v-model="form.telepon" label="Telepon customer"></v-text-field>
+              <v-select
+                v-model="form.sesi"
+                :items="sesiItems"
+                label="Sesi"
+              ></v-select>
 
-              <!-- FOR UPDATE, ALL FIELD MUST BE REQUIRED -->
-
-              <!-- V-TEXT-FIELD -->
+              <v-text-field v-model="form.tanggal" label="Tanggal" required></v-text-field>
+              
+              <v-date-picker
+                v-model="form.tanggal"
+                color="green lighten-1"
+              ></v-date-picker>
 
             </v-container>
           </v-card-text>
@@ -71,7 +78,7 @@
             <span class="headline">warning!</span>
           </v-card-title>
           <v-card-text>
-            Anda yakin ingin menghapus customer ini?
+            Anda yakin ingin menghapus reservasi ini?
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -107,33 +114,39 @@
         dialog: false,
         dialogConfirm: false,
         headers: [{
-            text: "Nama Customer",
+            text: "ID Meja",
             align: "start",
             sortable: true,
-            value: "NAMA_CUSTOMER"
+            value: "ID_MEJA"
           },
           {
-            text: "Email",
-            value: "EMAIL_CUSTOMER"
+            text: "ID Customer",
+            value: "ID_CUSTOMER"
           },
           {
-            text: "Telepon",
-            value: "TELEPON_CUSTOMER"
+            text: "Sesi",
+            value: "SESI_RESERVASI"
+          },
+          {
+            text: "Tanggal",
+            value: "TANGGAL_RESERVASI"
           },
           {
             text: "Actions",
             value: "actions"
           },
         ],
-        customerFormData: new FormData,
-        customer: [],
+        reservasiFormData: new FormData,
+        reservasi: [],
         form: {
-          nama: null,
-          email: null,
-          telepon: null,
+          meja: null,
+          customer: null,
+          sesi: null,
+          tanggal: null,
         },
         editId: '',
         deleteId: '',
+        sesiItems: ["Lunch", "Dinner"],
       };
     },
     methods: {
@@ -146,26 +159,25 @@
       },
       //read data
       readData() {
-        var url = this.$api + '/customer'
+        var url = this.$api + '/reservasi'
         this.$http.get(url, {
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('current_token')
           }
         }).then(response => {
-          this.customer = response.data.data
+          this.reservasi = response.data.data
         })
       },
       //simpan data
       save() {
-        this.customerFormData.append('NAMA_CUSTOMER', this.form.nama);
-        if(this.form.email != null)
-            this.customerFormData.append('EMAIL_CUSTOMER', this.form.email);
-        if(this.form.telepon != null)
-            this.customerFormData.append('TELEPON_CUSTOMER', this.form.telepon);
+        this.reservasiFormData.append('ID_MEJA', this.form.meja);
+        this.reservasiFormData.append('ID_CUSTOMER', this.form.customer);
+        this.reservasiFormData.append('SESI_RESERVASI', this.form.sesi);
+        this.reservasiFormData.append('TANGGAL_RESERVASI', this.form.tanggal);
 
-        var url = this.$api + '/customer'
+        var url = this.$api + '/reservasi'
         this.load = true
-        this.$http.post(url, this.customerFormData, {
+        this.$http.post(url, this.reservasiFormData, {
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('current_token')
           }
@@ -187,11 +199,12 @@
       //ubah data 
       update() {
         let newData = {
-          NAMA_CUSTOMER: this.form.nama,
-          EMAIL_CUSTOMER: this.form.email,
-          TELEPON_CUSTOMER: this.form.telepon,
+          ID_MEJA: this.form.meja,
+          ID_CUSTOMER: this.form.customer,
+          SESI_RESERVASI: this.form.sesi,
+          TANGGAL_RESERVASI: this.form.tanggal,
         }
-        var url = this.$api + '/customer/' + this.editId;
+        var url = this.$api + '/reservasi/' + this.editId;
         this.load = true
         this.$http.put(url, newData, {
           headers: {
@@ -215,16 +228,17 @@
       },
       editHandler(item) {
         this.inputType = 'Ubah';
-        this.editId = item.ID_CUSTOMER;
-        this.form.nama = item.NAMA_CUSTOMER;
-        this.form.email = item.EMAIL_CUSTOMER;
-        this.form.telepon = item.TELEPON_CUSTOMER;
+        this.editId = item.ID_RESERVASI;
+        this.form.meja = item.ID_MEJA;
+        this.form.customer = item.ID_CUSTOMER;
+        this.form.sesi = item.SESI_RESERVASI;
+        this.form.tanggal = item.TANGGAL_RESERVASI;
         this.dialog = true;
       },
       //hapus data 
       deleteData() {
         //mengahapus data 
-        var url = this.$api + '/customer/' + this.deleteId;
+        var url = this.$api + '/reservasi/' + this.deleteId;
         //data dihapus berdasarkan id 
         this.$http.delete(url, {
           headers: {
@@ -263,9 +277,10 @@
       },
       resetForm() {
         this.form = {
-          nama: null,
-          email: null,
-          telepon: null,
+          meja: null,
+          customer: null,
+          sesi: null,
+          tanggal: null,
         };
       },
       haveAccess(){

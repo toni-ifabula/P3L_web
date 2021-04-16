@@ -44,6 +44,13 @@ const router = new VueRouter({
                     meta: {title: 'Meja'},
                     component: importComponent('Meja'),
                 },
+                // Reservasi
+                {
+                    path: "/reservasi",
+                    name: "Reservasi",
+                    meta: {title: 'Reservasi'},
+                    component: importComponent('Reservasi'),
+                },
                 //Menu
                 {
                     path: "/menu",

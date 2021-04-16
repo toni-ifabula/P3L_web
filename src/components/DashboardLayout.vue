@@ -60,6 +60,7 @@ export default {
         { title: "Karyawan", icon: "badge", to: "/karyawan" },
         { title: "Meja", icon: "deck", to: "/meja" },
         { title: "Customer", icon: "people", to: "/customer" },
+        { title: "Reservasi", icon: "menu_book", to: "/reservasi" },
         { title: "Menu", icon: "restaurant_menu", to: "/menu" },
         { title: "Stok Bahan", icon: "inventory", to: "/stokBahan" },
       ],
