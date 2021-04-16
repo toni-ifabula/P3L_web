@@ -2,96 +2,105 @@
 
 <template>
   <v-main class="list">
-    <h3 class="text-h3 font-weight-medium mb-5"> Data Karyawan </h3>
+    <div v-if="haveAccess() == 0">
+      <v-row justify="center">
+        <h1>Tidak bisa diakses</h1>
+        <h2>Data karyawan hanya dapat diakses oleh owner dan manager</h2>
+      </v-row>
+    </div>
 
-    <v-card>
-      <v-card-title>
-        <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
-        <v-spacer></v-spacer>
-        <v-btn color="success" dark @click="dialog = true">
-          Tambah
-        </v-btn>
-      </v-card-title>
-      <v-data-table :headers="headers" :items="karyawan" :search="search">
-        <template v-slot:[`item.STATUS_KARYAWAN`]="{ item }">
-          <v-chip
-            :color="getStatusColor(item.STATUS_KARYAWAN)"
-            dark
-          >
-            {{ item.STATUS_KARYAWAN }}
-          </v-chip>
-        </template>
+    <div v-if="haveAccess() == 1">
+      <h3 class="text-h3 font-weight-medium mb-5"> Data Karyawan </h3>
 
-        <template v-slot:[`item.actions`]="{ item }">
-          <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
-            edit
-          </v-btn>
-          <v-btn small @click="resignStatus(item.ID_KARYAWAN)" color="orange">
-            Nonaktifkan
-          </v-btn>
-        </template>
-      </v-data-table>
-    </v-card>
-
-    <v-dialog v-model="dialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">{{ formTitle }} Data Karyawan</span>
-        </v-card-title>
-
-        <v-card-text>
-          <v-container>
-            <v-text-field v-model="form.nama_karyawan" label="Nama Karyawan" required></v-text-field>
-
-            <v-select
-              v-model="form.role"
-              :items="roleItems"
-              label="Role"
-            ></v-select>
-
-            <v-select
-              v-model="form.jenis_kelamin"
-              :items="jenisKelaminItems"
-              label="Jenis Kelamin"
-            ></v-select>
-
-            <v-text-field v-model="form.telepon" label="Telepon" required></v-text-field>
-
-            <v-text-field v-model="form.email" label="Email" required></v-text-field>
-
-            <v-text-field v-model="form.password" label="Password" required></v-text-field>
-
-            <v-text-field v-model="form.tanggal_gabung" label="Tanggal Gabung" required></v-text-field>
-            
-            <v-date-picker
-              v-model="form.tanggal_gabung"
-              color="green lighten-1"
-            ></v-date-picker>
-
-            <v-select
-              v-model="form.status"
-              :items="statusItems"
-              label="Status"
-            ></v-select>
-          </v-container>
-        </v-card-text>
-
-        <v-card-actions>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="cancel">
-            Cancel
+          <v-btn color="success" dark @click="dialog = true">
+            Tambah
           </v-btn>
-          <v-btn color="blue darken-1" text @click="setForm">
-            Save
-          </v-btn>
-        </v-card-actions>
+        </v-card-title>
+        <v-data-table :headers="headers" :items="karyawan" :search="search">
+          <template v-slot:[`item.STATUS_KARYAWAN`]="{ item }">
+            <v-chip
+              :color="getStatusColor(item.STATUS_KARYAWAN)"
+              dark
+            >
+              {{ item.STATUS_KARYAWAN }}
+            </v-chip>
+          </template>
+
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
+              edit
+            </v-btn>
+            <v-btn small @click="resignStatus(item.ID_KARYAWAN)" color="orange">
+              Nonaktifkan
+            </v-btn>
+          </template>
+        </v-data-table>
       </v-card>
-    </v-dialog>
 
-    <v-snackbar v-model="snackbar" :color="color" timeout="2000" bottom>
-      {{error_message}}
-    </v-snackbar>
+      <v-dialog v-model="dialog" max-width="600px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">{{ formTitle }} Data Karyawan</span>
+          </v-card-title>
 
+          <v-card-text>
+            <v-container>
+              <v-text-field v-model="form.nama_karyawan" label="Nama Karyawan" required></v-text-field>
+
+              <v-select
+                v-model="form.role"
+                :items="roleItems"
+                label="Role"
+              ></v-select>
+
+              <v-select
+                v-model="form.jenis_kelamin"
+                :items="jenisKelaminItems"
+                label="Jenis Kelamin"
+              ></v-select>
+
+              <v-text-field v-model="form.telepon" label="Telepon" required></v-text-field>
+
+              <v-text-field v-model="form.email" label="Email" required></v-text-field>
+
+              <v-text-field v-model="form.password" label="Password" required></v-text-field>
+
+              <v-text-field v-model="form.tanggal_gabung" label="Tanggal Gabung" required></v-text-field>
+              
+              <v-date-picker
+                v-model="form.tanggal_gabung"
+                color="green lighten-1"
+              ></v-date-picker>
+
+              <v-select
+                v-model="form.status"
+                :items="statusItems"
+                label="Status"
+              ></v-select>
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="cancel">
+              Cancel
+            </v-btn>
+            <v-btn color="blue darken-1" text @click="setForm">
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-snackbar v-model="snackbar" :color="color" timeout="2000" bottom>
+        {{error_message}}
+      </v-snackbar>
+    </div>
+    
   </v-main>
 </template>
 <script>
@@ -301,6 +310,12 @@
         else if (status === 'Aktif') return 'green'
         else return 'orange'
       },
+      haveAccess(){
+        if(localStorage.getItem("current_role") === '1' || localStorage.getItem("current_role") === '2')
+          return 1
+        else
+          return 0
+      }
     },
     computed: {
       formTitle() {
@@ -309,6 +324,7 @@
     },
     mounted() {
       this.readData();
+      console.log(localStorage.getItem("current_role"))
     },
   };
 </script>

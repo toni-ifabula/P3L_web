@@ -2,65 +2,74 @@
 
 <template>
   <v-main class="list">
-    <h3 class="text-h3 font-weight-medium mb-5"> Data Stok Bahan </h3>
+    <div v-if="haveAccess() == 0">
+      <v-row justify="center">
+        <h1>Tidak bisa diakses</h1>
+        <h2>Data stok bahan hanya dapat diakses oleh chef dan manager</h2>
+      </v-row>
+    </div>
 
-    <v-card>
-      <v-card-title>
-        <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
-        <v-spacer></v-spacer>
-        <v-btn color="success" dark @click="dialog = true">
-          Tambah
-        </v-btn>
-      </v-card-title>
-      <v-data-table :headers="headers" :items="stokBahan" :search="search">
-        <template v-slot:[`item.actions`]="{ item }">
-          <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
-            edit
-          </v-btn>
-          <!-- <v-btn small @click="deleteHandler(item.ID_STOK)" color="red">
-            delete
-          </v-btn> -->
-        </template>
-      </v-data-table>
-    </v-card>
+    <div v-if="haveAccess() == 1">
+      <h3 class="text-h3 font-weight-medium mb-5"> Data Stok Bahan </h3>
 
-    <!-- <v-dialog v-model="dialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">{{ formTitle }} Data Stok Bahan</span>
-        </v-card-title>
-
-        <v-card-text>
-          <v-container>
-            <v-text-field v-model="form.nama" label="Nama Stok Bahan" required></v-text-field>
-
-            <v-select
-              v-model="form.unit"
-              :items="unitItems"
-              label="Unit"
-            ></v-select>
-
-            <v-text-field v-model="form.harga" label="Harga" required></v-text-field>
-
-          </v-container>
-        </v-card-text>
-
-        <v-card-actions>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="cancel">
-            Cancel
+          <v-btn color="success" dark @click="dialog = true">
+            Tambah
           </v-btn>
-          <v-btn color="blue darken-1" text @click="setForm">
-            Save
-          </v-btn>
-        </v-card-actions>
+        </v-card-title>
+        <v-data-table :headers="headers" :items="stokBahan" :search="search">
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
+              edit
+            </v-btn>
+            <!-- <v-btn small @click="deleteHandler(item.ID_STOK)" color="red">
+              delete
+            </v-btn> -->
+          </template>
+        </v-data-table>
       </v-card>
-    </v-dialog> -->
+
+      <!-- <v-dialog v-model="dialog" max-width="600px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">{{ formTitle }} Data Stok Bahan</span>
+          </v-card-title>
+
+          <v-card-text>
+            <v-container>
+              <v-text-field v-model="form.nama" label="Nama Stok Bahan" required></v-text-field>
+
+              <v-select
+                v-model="form.unit"
+                :items="unitItems"
+                label="Unit"
+              ></v-select>
+
+              <v-text-field v-model="form.harga" label="Harga" required></v-text-field>
+
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="cancel">
+              Cancel
+            </v-btn>
+            <v-btn color="blue darken-1" text @click="setForm">
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog> -->
 
 
-    <v-snackbar v-model="snackbar" :color="color" timeout="2000" bottom>
-      {{error_message}}
-    </v-snackbar>
+      <v-snackbar v-model="snackbar" :color="color" timeout="2000" bottom>
+        {{error_message}}
+      </v-snackbar>
+    </div>
 
   </v-main>
 </template>
@@ -238,6 +247,12 @@
           harga: null,
         };
       },
+      haveAccess() {
+        if(localStorage.getItem("current_role") === '2' || localStorage.getItem("current_role") === '5')
+          return 1
+        else
+          return 0
+      }
     },
     computed: {
       formTitle() {

@@ -88,8 +88,8 @@ export default {
   },
 
   mounted() {
-      this.readUserData();
-    },
+    this.readUserData();
+  },
 };
 </script>
 

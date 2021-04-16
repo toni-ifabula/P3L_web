@@ -8,16 +8,16 @@
       <v-card-title>
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
         <v-spacer></v-spacer>
-        <v-btn color="success" dark @click="dialog = true">
+        <v-btn color="success" dark @click="dialog = true" v-if="haveAccess() == 1">
           Tambah
         </v-btn>
       </v-card-title>
       <v-data-table :headers="headers" :items="menu" :search="search">
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
+          <v-btn small class="mr-2" @click="editHandler(item)" color="blue" v-if="haveAccess() == 1">
             edit
           </v-btn>
-          <v-btn small @click="deleteHandler(item.ID_MENU)" color="red">
+          <v-btn small @click="deleteHandler(item.ID_MENU)" color="red" v-if="haveAccess() == 1">
             delete
           </v-btn>
         </template>
@@ -300,6 +300,12 @@
           harga: null,
         };
       },
+      haveAccess() {
+        if(localStorage.getItem("current_role") === '2')
+          return 1
+        else
+          return 0
+      }
     },
     computed: {
       formTitle() {

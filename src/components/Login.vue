@@ -50,12 +50,6 @@
       </v-layout>
     </v-container>
 
-    <v-dialog v-model="dialog" max-width="600px">
-      <v-card>
-        <v-card-title>{{ message }}</v-card-title>
-      </v-card>
-    </v-dialog>
-
   </main>
 </template>
 
@@ -86,8 +80,6 @@ export default {
       passwordRules: [(v) => !!v || "Password tidak boleh kosong"],
       email: "",
       emailRules: [(v) => !!v || "E-mail tidak boleh kosong"],
-      dialog: false,
-      message: "Anda sudah resign dan tidak dapat mengakses sistem.",
     };
   },
   methods: {
@@ -102,7 +94,7 @@ export default {
           })
           .then((response) => {
             if (response.data.user.STATUS_KARYAWAN === 'Resign') {
-              this.dialog = true;
+              alert("Anda Sudah Resign")
             } else {
               localStorage.setItem("current_id", response.data.user.ID_KARYAWAN); //menyimpan id user yang sedang login
               localStorage.setItem("current_role", response.data.user.ID_ROLE);

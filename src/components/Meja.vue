@@ -8,7 +8,7 @@
       <v-card-title>
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
         <v-spacer></v-spacer>
-        <v-btn color="success" dark @click="dialog = true">
+        <v-btn color="success" dark @click="dialog = true" v-if="haveAccess()">
           Tambah
         </v-btn>
       </v-card-title>
@@ -22,7 +22,7 @@
           </v-chip>
         </template>
 
-        <template v-slot:[`item.actions`]="{ item }">
+        <template v-slot:[`item.actions`]="{ item }" v-if="haveAccess()">
           <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
             edit
           </v-btn>
@@ -260,6 +260,12 @@
         else if (status === 'Kosong') return 'green'
         else return 'orange'
       },
+      haveAccess() {
+        if(localStorage.getItem("current_role") === '1' || localStorage.getItem("current_role") === '2')
+          return 1
+        else
+          return 0
+      }
     },
     computed: {
       formTitle() {
