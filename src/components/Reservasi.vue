@@ -32,7 +32,7 @@
         </v-data-table>
       </v-card>
 
-      <v-dialog v-model="dialog" max-width="600px">
+      <v-dialog v-model="dialog" max-width="600px" persistent>
         <v-card>
           <v-card-title>
             <span class="headline">{{ formTitle }} Data Reservasi</span>
@@ -40,9 +40,20 @@
 
           <v-card-text>
             <v-container>
-              <v-text-field v-model="form.meja" label="ID Meja" required></v-text-field>
+              //TODO FORM VALIDATION
+              <v-select
+                v-model="form.meja"
+                :items="mejaItems"
+                label="Nomor Meja"
+                v-on:change="getIDMejabyNomor(form.meja)"
+              ></v-select>
 
-              <v-text-field v-model="form.customer" label="ID Customer" :rules="[rules.required]"></v-text-field>
+              <v-select
+                v-model="form.customer"
+                :items="customerItems"
+                label="Nama Customer"
+                v-on:change="getIDCustomerbyNama(form.customer)"
+              ></v-select>
 
               <v-select
                 v-model="form.sesi"
@@ -147,6 +158,10 @@
         editId: '',
         deleteId: '',
         sesiItems: ["Lunch", "Dinner"],
+        mejaItems: [],
+        selectedMejaID: null,
+        customerItems: [],
+        selectedCustomerID: null,
       };
     },
     methods: {
@@ -170,8 +185,8 @@
       },
       //simpan data
       save() {
-        this.reservasiFormData.append('ID_MEJA', this.form.meja);
-        this.reservasiFormData.append('ID_CUSTOMER', this.form.customer);
+        this.reservasiFormData.append('ID_MEJA', this.selectedMejaID);
+        this.reservasiFormData.append('ID_CUSTOMER', this.selectedCustomerID);
         this.reservasiFormData.append('SESI_RESERVASI', this.form.sesi);
         this.reservasiFormData.append('TANGGAL_RESERVASI', this.form.tanggal);
 
@@ -199,8 +214,8 @@
       //ubah data 
       update() {
         let newData = {
-          ID_MEJA: this.form.meja,
-          ID_CUSTOMER: this.form.customer,
+          ID_MEJA: this.selectedMejaID,
+          ID_CUSTOMER: this.selectedCustomerID,
           SESI_RESERVASI: this.form.sesi,
           TANGGAL_RESERVASI: this.form.tanggal,
         }
@@ -284,11 +299,57 @@
         };
       },
       haveAccess(){
-        if(localStorage.getItem("current_role") === '2' || localStorage.getItem("current_role") === '3')
+        //FIXME auth role
+        if(localStorage.getItem("current_role") === '1' || localStorage.getItem("current_role") === '3')
           return 1
         else
           return 0
-      }
+      },
+      getNomorMeja() {
+        var url = this.$api + '/meja'
+        this.$http.get(url, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          for(var i = 0; i < response.data.data.length; i++) {
+            if(response.data.data[i].STATUS_MEJA === 'Kosong')
+              this.mejaItems.push(response.data.data[i].NOMOR_MEJA);
+          }
+        })
+      },
+      getIDMejabyNomor(nomorMeja) {
+        var url = this.$api + '/IDMeja/' + nomorMeja;
+        this.$http.get(url, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          this.selectedMejaID = response.data.data[0].ID_MEJA;
+        })
+      },
+      getNamaCustomer() {
+        var url = this.$api + '/customer'
+        this.$http.get(url, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          for(var i = 0; i < response.data.data.length; i++) {
+            this.customerItems.push(response.data.data[i].NAMA_CUSTOMER);
+          }
+        })
+      },
+      getIDCustomerbyNama(nama) {
+        var url = this.$api + '/IDCustomer/' + nama;
+        this.$http.get(url, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          this.selectedCustomerID = response.data.data[0].ID_CUSTOMER;
+        })
+      },
     },
     computed: {
       formTitle() {
@@ -297,6 +358,9 @@
     },
     mounted() {
       this.readData();
+      this.getNomorMeja();
+      this.getNamaCustomer();
+      console.log(localStorage.getItem("current_role"));
     },
   };
 </script>

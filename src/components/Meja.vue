@@ -33,7 +33,7 @@
       </v-data-table>
     </v-card>
 
-    <v-dialog v-model="dialog" max-width="600px">
+    <v-dialog v-model="dialog" max-width="600px" persistent>
       <v-card>
         <v-card-title>
           <span class="headline">{{ formTitle }} Data Meja</span>
@@ -41,6 +41,7 @@
 
         <v-card-text>
           <v-container>
+            // TODO FORM VALIDATION
             <v-text-field v-model="form.nomor" label="Nomor Meja" required></v-text-field>
 
             <v-select
@@ -265,7 +266,7 @@
           return 1
         else
           return 0
-      }
+      },
     },
     computed: {
       formTitle() {

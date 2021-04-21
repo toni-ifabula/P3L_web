@@ -32,7 +32,7 @@
         </v-data-table>
       </v-card>
 
-      <!-- <v-dialog v-model="dialog" max-width="600px">
+      <v-dialog v-model="dialog" max-width="600px">
         <v-card>
           <v-card-title>
             <span class="headline">{{ formTitle }} Data Stok Bahan</span>
@@ -40,6 +40,7 @@
 
           <v-card-text>
             <v-container>
+              //TODO FORM VALIDATION
               <v-text-field v-model="form.nama" label="Nama Stok Bahan" required></v-text-field>
 
               <v-select
@@ -63,8 +64,7 @@
             </v-btn>
           </v-card-actions>
         </v-card>
-      </v-dialog> -->
-
+      </v-dialog>
 
       <v-snackbar v-model="snackbar" :color="color" timeout="2000" bottom>
         {{error_message}}
@@ -248,7 +248,7 @@
         };
       },
       haveAccess() {
-        if(localStorage.getItem("current_role") === '2' || localStorage.getItem("current_role") === '5')
+        if(localStorage.getItem("current_role") === '1' || localStorage.getItem("current_role") === '5')
           return 1
         else
           return 0

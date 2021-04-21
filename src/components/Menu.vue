@@ -24,7 +24,7 @@
       </v-data-table>
     </v-card>
 
-    <v-dialog v-model="dialog" max-width="600px">
+    <v-dialog v-model="dialog" max-width="600px" persistent>
       <v-card>
         <v-card-title>
           <span class="headline">{{ formTitle }} Data Menu</span>
@@ -32,8 +32,10 @@
 
         <v-card-text>
           <v-container>
+            // TODO FORM VALIDATION
             <v-text-field v-model="form.nama" label="Nama Menu" required></v-text-field>
 
+            // IMPLEMENT RELATIONAL
             <v-select
               v-model="form.bahan"
               :items="bahanItems"

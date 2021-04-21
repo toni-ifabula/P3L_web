@@ -41,7 +41,7 @@
         </v-data-table>
       </v-card>
 
-      <v-dialog v-model="dialog" max-width="600px">
+      <v-dialog v-model="dialog" max-width="600px" persistent>
         <v-card>
           <v-card-title>
             <span class="headline">{{ formTitle }} Data Karyawan</span>
@@ -49,12 +49,14 @@
 
           <v-card-text>
             <v-container>
+              // TODO FORM VALIDATION
               <v-text-field v-model="form.nama_karyawan" label="Nama Karyawan" required></v-text-field>
 
               <v-select
                 v-model="form.role"
                 :items="roleItems"
                 label="Role"
+                v-on:change="getIDRolebyNama(form.role)"
               ></v-select>
 
               <v-select
@@ -67,7 +69,7 @@
 
               <v-text-field v-model="form.email" label="Email" required></v-text-field>
 
-              <v-text-field v-model="form.password" label="Password" required></v-text-field>
+              <v-text-field v-model="form.password" label="Password" type="password" required></v-text-field>
 
               <v-text-field v-model="form.tanggal_gabung" label="Tanggal Gabung" required></v-text-field>
               
@@ -164,9 +166,11 @@
           status: null,
         },
         editId: '',
-        roleItems: ["1", "2", "3", "4", "5"],
+        roleItems: [],
+        selectedRoleID: null,
         jenisKelaminItems: ["Laki-laki", "Perempuan"],
         statusItems: ["Aktif", "Resign"],
+
       };
     },
     methods: {
@@ -191,7 +195,7 @@
       //simpan data
       save() {
         this.karyawanFormData.append('NAMA_KARYAWAN', this.form.nama_karyawan);
-        this.karyawanFormData.append('ID_ROLE', this.form.role);
+        this.karyawanFormData.append('ID_ROLE', this.selectedRoleID);
         this.karyawanFormData.append('JENIS_KELAMIN_KARYAWAN', this.form.jenis_kelamin);
         this.karyawanFormData.append('TELEPON_KARYAWAN', this.form.telepon);
         this.karyawanFormData.append('email', this.form.email);
@@ -224,7 +228,7 @@
       update() {
         let newData = {
           NAMA_KARYAWAN: this.form.nama_karyawan,
-          ID_ROLE: this.form.role,
+          ID_ROLE: this.selectedRoleID,
           JENIS_KELAMIN_KARYAWAN: this.form.jenis_kelamin,
           TELEPON_KARYAWAN: this.form.telepon,
           email: this.form.email,
@@ -311,11 +315,34 @@
         else return 'orange'
       },
       haveAccess(){
+        //FIXME auth role
         if(localStorage.getItem("current_role") === '1' || localStorage.getItem("current_role") === '2')
           return 1
         else
           return 0
-      }
+      },
+      getNamaRole() {
+        var url = this.$api + '/role'
+        this.$http.get(url, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          for(var i = 0; i < response.data.data.length; i++) {
+            this.roleItems.push(response.data.data[i].NAMA_ROLE);
+          }
+        })
+      },
+      getIDRolebyNama(nama) {
+        var url = this.$api + '/IDRole/' + nama;
+        this.$http.get(url, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          this.selectedRoleID = response.data.data[0].ID_ROLE;
+        })
+      },
     },
     computed: {
       formTitle() {
@@ -324,7 +351,7 @@
     },
     mounted() {
       this.readData();
-      console.log(localStorage.getItem("current_role"))
+      this.getNamaRole();
     },
   };
 </script>

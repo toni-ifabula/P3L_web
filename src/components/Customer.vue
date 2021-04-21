@@ -32,7 +32,7 @@
         </v-data-table>
       </v-card>
 
-      <v-dialog v-model="dialog" max-width="600px">
+      <v-dialog v-model="dialog" max-width="600px" persistent>
         <v-card>
           <v-card-title>
             <span class="headline">{{ formTitle }} Data Customer</span>
@@ -40,12 +40,14 @@
 
           <v-card-text>
             <v-container>
+              // TODO FORM VALIDATION
               <v-text-field v-model="form.nama" label="Nama customer" required></v-text-field>
 
               <v-text-field v-model="form.email" label="Email customer" :rules="[rules.required]"></v-text-field>
 
               <v-text-field v-model="form.telepon" label="Telepon customer"></v-text-field>
 
+              // TODO REQUIRED FIELD
               <!-- FOR UPDATE, ALL FIELD MUST BE REQUIRED -->
 
               <!-- V-TEXT-FIELD -->
