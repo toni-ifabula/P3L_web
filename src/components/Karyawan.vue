@@ -49,51 +49,56 @@
 
           <v-card-text>
             <v-container>
-              // TODO FORM VALIDATION
-              <v-text-field v-model="form.nama_karyawan" label="Nama Karyawan" required></v-text-field>
+              <v-form ref="form">
+                <v-text-field v-model="form.nama_karyawan" label="Nama Karyawan" :rules="requiredRules" required></v-text-field>
 
-              <v-select
-                v-model="form.role"
-                :items="roleItems"
-                label="Role"
-                v-on:change="getIDRolebyNama(form.role)"
-              ></v-select>
+                <v-select
+                  v-model="form.role"
+                  :items="roleItems"
+                  label="Role"
+                  v-on:change="getIDRolebyNama(form.role)"
+                  :rules="requiredRules"
+                ></v-select>
 
-              <v-select
-                v-model="form.jenis_kelamin"
-                :items="jenisKelaminItems"
-                label="Jenis Kelamin"
-              ></v-select>
+                <v-select
+                  v-model="form.jenis_kelamin"
+                  :items="jenisKelaminItems"
+                  label="Jenis Kelamin"
+                  :rules="requiredRules"
+                ></v-select>
 
-              <v-text-field v-model="form.telepon" label="Telepon" required></v-text-field>
+                <v-text-field v-model="form.telepon" label="Telepon" type="number" :rules="teleponRules" required></v-text-field>
 
-              <v-text-field v-model="form.email" label="Email" required></v-text-field>
+                <v-text-field v-model="form.email" label="Email" type="email" :rules="requiredRules" required></v-text-field>
 
-              <v-text-field v-model="form.password" label="Password" type="password" required></v-text-field>
+                <v-text-field v-model="form.password" label="Password" type="password" :rules="passwordRules" required></v-text-field>
 
-              <v-menu
-                offset-y
-                min-width="auto"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
+                <v-menu
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="form.tanggal_gabung"
+                      label="Tanggal Gabung"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                      :rules="requiredRules"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
                     v-model="form.tanggal_gabung"
-                    label="Tanggal Gabung"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="form.tanggal_gabung"
-                ></v-date-picker>
-              </v-menu>
+                  ></v-date-picker>
+                </v-menu>
 
-              <v-select
-                v-model="form.status"
-                :items="statusItems"
-                label="Status"
-              ></v-select>
+                <v-select
+                  v-model="form.status"
+                  :items="statusItems"
+                  label="Status"
+                  :rules="requiredRules"
+                ></v-select>
+              </v-form>
             </v-container>
           </v-card-text>
 
@@ -181,15 +186,27 @@
         selectedRoleID: null,
         jenisKelaminItems: ["Laki-laki", "Perempuan"],
         statusItems: ["Aktif", "Resign"],
-
+        requiredRules: [
+          v => !!v || 'This field is required'
+        ],
+        passwordRules: [
+          v => !!v || 'This field is required',
+          v => (v && v.length >= 6) || 'Password minimal 6 karakter'
+        ],
+        teleponRules: [
+          v => !!v || 'This field is required',
+          v => (v && v.length >= 10 && v.length <= 12) || 'Nomor telepon harus 10-12 angka'
+        ],
       };
     },
     methods: {
       setForm() {
-        if (this.inputType === 'Tambah') {
-          this.save()
-        } else {
-          this.update()
+        if(this.$refs.form.validate()) {
+          if (this.inputType === 'Tambah') {
+            this.save()
+          } else {
+            this.update()
+          }
         }
       },
       //read data

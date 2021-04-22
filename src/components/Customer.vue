@@ -40,18 +40,13 @@
 
           <v-card-text>
             <v-container>
-              // TODO FORM VALIDATION
-              <v-text-field v-model="form.nama" label="Nama customer" required></v-text-field>
+              <v-form ref="form">
+                <v-text-field v-model="form.nama" label="Nama customer" :rules="requiredRules" required></v-text-field>
 
-              <v-text-field v-model="form.email" label="Email customer" :rules="[rules.required]"></v-text-field>
+                <v-text-field v-model="form.email" label="Email customer" required></v-text-field>
 
-              <v-text-field v-model="form.telepon" label="Telepon customer"></v-text-field>
-
-              // TODO REQUIRED FIELD
-              <!-- FOR UPDATE, ALL FIELD MUST BE REQUIRED -->
-
-              <!-- V-TEXT-FIELD -->
-
+                <v-text-field v-model="form.telepon" label="Telepon customer" required></v-text-field>
+              </v-form>
             </v-container>
           </v-card-text>
 
@@ -99,7 +94,6 @@
     name: "List",
     data() {
       return {
-        rules: {required: value => !!value || 'Required.',},
         inputType: 'Tambah',
         load: false,
         snackbar: false,
@@ -136,14 +130,19 @@
         },
         editId: '',
         deleteId: '',
+        requiredRules: [
+          v => !!v || 'This field is required'
+        ],
       };
     },
     methods: {
       setForm() {
-        if (this.inputType === 'Tambah') {
-          this.save()
-        } else {
-          this.update()
+        if(this.$refs.form.validate()) {
+          if (this.inputType === 'Tambah') {
+            this.save()
+          } else {
+            this.update()
+          }
         }
       },
       //read data
@@ -271,7 +270,8 @@
         };
       },
       haveAccess(){
-        if(localStorage.getItem("current_role") === '2' || localStorage.getItem("current_role") === '3')
+        //FIXME auth role
+        if(localStorage.getItem("current_role") === '1' || localStorage.getItem("current_role") === '3')
           return 1
         else
           return 0

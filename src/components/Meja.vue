@@ -41,15 +41,16 @@
 
         <v-card-text>
           <v-container>
-            // TODO FORM VALIDATION
-            <v-text-field v-model="form.nomor" label="Nomor Meja" required></v-text-field>
+            <v-form ref="form">
+              <v-text-field v-model="form.nomor" label="Nomor Meja" type="number" :rules="requiredRules" required></v-text-field>
 
-            <v-select
-              v-model="form.status"
-              :items="statusItems"
-              label="Status"
-            ></v-select>
-
+              <v-select
+                v-model="form.status"
+                :items="statusItems"
+                label="Status"
+                :rules="requiredRules"
+              ></v-select>
+            </v-form>
           </v-container>
         </v-card-text>
 
@@ -128,14 +129,19 @@
         editId: '',
         deleteId: '',
         statusItems: ["Kosong", "Isi"],
+        requiredRules: [
+          v => !!v || 'This field is required'
+        ],
       };
     },
     methods: {
       setForm() {
-        if (this.inputType === 'Tambah') {
-          this.save()
-        } else {
-          this.update()
+        if(this.$refs.form.validate()) {
+          if (this.inputType === 'Tambah') {
+            this.save()
+          } else {
+            this.update()
+          }
         }
       },
       //read data

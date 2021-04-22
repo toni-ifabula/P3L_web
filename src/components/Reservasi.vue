@@ -40,44 +40,49 @@
 
           <v-card-text>
             <v-container>
-              //TODO FORM VALIDATION
-              <v-select
-                v-model="form.meja"
-                :items="mejaItems"
-                label="Nomor Meja"
-                v-on:change="getIDMejabyNomor(form.meja)"
-              ></v-select>
+              <v-form ref="form">
+                <v-select
+                  v-model="form.meja"
+                  :items="mejaItems"
+                  label="Nomor Meja"
+                  v-on:change="getIDMejabyNomor(form.meja)"
+                  :rules="requiredRules"
+                ></v-select>
 
-              <v-select
-                v-model="form.customer"
-                :items="customerItems"
-                label="Nama Customer"
-                v-on:change="getIDCustomerbyNama(form.customer)"
-              ></v-select>
+                <v-select
+                  v-model="form.customer"
+                  :items="customerItems"
+                  label="Nama Customer"
+                  v-on:change="getIDCustomerbyNama(form.customer)"
+                  :rules="requiredRules"
+                ></v-select>
 
-              <v-select
-                v-model="form.sesi"
-                :items="sesiItems"
-                label="Sesi"
-              ></v-select>
+                <v-select
+                  v-model="form.sesi"
+                  :items="sesiItems"
+                  label="Sesi"
+                  :rules="requiredRules"
+                ></v-select>
 
-              <v-menu
-                offset-y
-                min-width="auto"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
+                <v-menu
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="form.tanggal"
+                      label="Tanggal"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                      :rules="requiredRules"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
                     v-model="form.tanggal"
-                    label="Tanggal"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="form.tanggal"
-                ></v-date-picker>
-              </v-menu>
+                  ></v-date-picker>
+                </v-menu>
+              </v-form>
 
             </v-container>
           </v-card-text>
@@ -173,14 +178,19 @@
         selectedMejaID: null,
         customerItems: [],
         selectedCustomerID: null,
+        requiredRules: [
+          v => !!v || 'This field is required'
+        ],
       };
     },
     methods: {
       setForm() {
-        if (this.inputType === 'Tambah') {
-          this.save()
-        } else {
-          this.update()
+        if(this.$refs.form.validate()) {
+          if (this.inputType === 'Tambah') {
+            this.save()
+          } else {
+            this.update()
+          }
         }
       },
       //read data
@@ -371,7 +381,6 @@
       this.readData();
       this.getNomorMeja();
       this.getNamaCustomer();
-      console.log(localStorage.getItem("current_role"));
     },
   };
 </script>
