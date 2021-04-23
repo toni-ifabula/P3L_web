@@ -12,6 +12,7 @@
           Tambah
         </v-btn>
       </v-card-title>
+      //FIXME show bahan in string
       <v-data-table :headers="headers" :items="menu" :search="search">
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn small class="mr-2" @click="editHandler(item)" color="blue" v-if="haveAccess() == 1">
@@ -32,31 +33,35 @@
 
         <v-card-text>
           <v-container>
-            // TODO FORM VALIDATION
-            <v-text-field v-model="form.nama" label="Nama Menu" required></v-text-field>
+            <v-form ref="form">
+              <v-text-field v-model="form.nama" label="Nama Menu" :rules="requiredRules" required></v-text-field>
 
-            // IMPLEMENT RELATIONAL
-            <v-select
-              v-model="form.bahan"
-              :items="bahanItems"
-              label="Bahan"
-            ></v-select>
+              <v-select
+                v-model="form.bahan"
+                :items="bahanItems"
+                label="Bahan"
+                v-on:change="getIDBahanbyNama(form.bahan)"
+                :rules="requiredRules"
+              ></v-select>
 
-            <v-select
-              v-model="form.kategori"
-              :items="kategoriItems"
-              label="Kategori"
-            ></v-select>
+              <v-select
+                v-model="form.kategori"
+                :items="kategoriItems"
+                label="Kategori"
+                :rules="requiredRules"
+              ></v-select>
 
-            <v-text-field v-model="form.deskripsi" label="Deskripsi" required></v-text-field>
+              <v-text-field v-model="form.deskripsi" label="Deskripsi" :rules="requiredRules" required></v-text-field>
 
-            <v-select
-              v-model="form.unit"
-              :items="unitItems"
-              label="Unit"
-            ></v-select>
+              <v-select
+                v-model="form.unit"
+                :items="unitItems"
+                label="Unit"
+                :rules="requiredRules"
+              ></v-select>
 
-            <v-text-field v-model="form.harga" label="Harga" required></v-text-field>
+              <v-text-field prefix="Rp" v-model="form.harga" label="Harga" type="number" :rules="requiredRules" required></v-text-field>
+            </v-form>
 
           </v-container>
         </v-card-text>
@@ -157,15 +162,21 @@
         deleteId: '',
         kategoriItems: ["Makanan Utama", "Makanan Side Dish", "Minuman"],
         unitItems: ["Plate", "Bowl", "Mini Bowl", "Glass", "Bottle"],
-        bahanItems: ["1", "2", "3"],
+        bahanItems: [],
+        selectedBahanID: null,
+        requiredRules: [
+          v => !!v || 'This field is required'
+        ],
       };
     },
     methods: {
       setForm() {
-        if (this.inputType === 'Tambah') {
-          this.save()
-        } else {
-          this.update()
+        if(this.$refs.form.validate()) {
+          if (this.inputType === 'Tambah') {
+            this.save()
+          } else {
+            this.update()
+          }
         }
       },
       //read data
@@ -182,7 +193,7 @@
       //simpan data
       save() {
         this.menuFormData.append('NAMA_MENU', this.form.nama);
-        this.menuFormData.append('ID_STOK', this.form.bahan);
+        this.menuFormData.append('ID_STOK', this.selectedBahanID);
         this.menuFormData.append('KATEGORI_MENU', this.form.kategori);
         this.menuFormData.append('DESKRIPSI_MENU', this.form.deskripsi);
         this.menuFormData.append('UNIT_MENU', this.form.unit);
@@ -213,7 +224,7 @@
       update() {
         let newData = {
           NAMA_MENU: this.form.nama,
-          ID_STOK: this.form.bahan,
+          ID_STOK: this.selectedBahanID,
           KATEGORI_MENU: this.form.kategori,
           DESKRIPSI_MENU: this.form.deskripsi,
           UNIT_MENU: this.form.unit,
@@ -303,11 +314,34 @@
         };
       },
       haveAccess() {
-        if(localStorage.getItem("current_role") === '2')
+        //FIXME auth role
+        if(localStorage.getItem("current_role") === '1')
           return 1
         else
           return 0
-      }
+      },
+      getNamaBahan() {
+        var url = this.$api + '/stokBahan'
+        this.$http.get(url, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          for(var i = 0; i < response.data.data.length; i++) {
+            this.bahanItems.push(response.data.data[i].NAMA_STOK);
+          }
+        })
+      },
+      getIDBahanbyNama(nama) {
+        var url = this.$api + '/IDStokBahan/' + nama;
+        this.$http.get(url, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          this.selectedBahanID = response.data.data[0].ID_STOK;
+        })
+      },
     },
     computed: {
       formTitle() {
@@ -316,6 +350,7 @@
     },
     mounted() {
       this.readData();
+      this.getNamaBahan();
     },
   };
 </script>

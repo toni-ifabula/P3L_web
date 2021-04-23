@@ -40,6 +40,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <VSpacer />
       <v-toolbar-items>
+        <v-btn text router :to="'profile'"><v-icon large>person</v-icon></v-btn>
         <v-btn text router @click="logout()"><v-icon large color="red">mdi-power</v-icon></v-btn>
       </v-toolbar-items>
     </v-app-bar>

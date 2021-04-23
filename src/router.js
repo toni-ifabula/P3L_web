@@ -23,6 +23,13 @@ const router = new VueRouter({
                     meta: {title: 'Dashboard'},
                     component: importComponent('Dashboard'),
                 },
+                // Profile
+                {
+                    path: "/profile",
+                    name: "Profile",
+                    meta: {title: 'Profile'},
+                    component: importComponent('Profile'),
+                },
                 //Karyawan
                 {
                     path: "/karyawan",
