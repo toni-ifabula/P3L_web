@@ -25,46 +25,64 @@
             <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
               edit
             </v-btn>
-            <!-- <v-btn small @click="deleteHandler(item.ID_STOK)" color="red">
-              delete
-            </v-btn> -->
+            <v-btn small class="mr-2" @click="showDetail(item)" color="yellow">
+              Detail
+            </v-btn>
           </template>
         </v-data-table>
       </v-card>
 
       <v-dialog v-model="dialog" max-width="600px">
-        <v-card>
-          <v-card-title>
-            <span class="headline">{{ formTitle }} Data Stok Bahan</span>
-          </v-card-title>
-
-          <v-card-text>
-            <v-container>
-              //TODO FORM VALIDATION
-              <v-text-field v-model="form.nama" label="Nama Stok Bahan" required></v-text-field>
-
+      <v-card>
+        <v-card-title>
+          <span class="headline">{{ formTitle }} Data Stok Bahan</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-form ref="form">
+              <v-text-field v-model="form.nama" label="Nama Stok Bahan" :rules="requiredRules" required></v-text-field>
               <v-select
                 v-model="form.unit"
                 :items="unitItems"
                 label="Unit"
+                :rules="requiredRules"
               ></v-select>
+              <v-text-field v-model="form.harga" label="Harga" :rules="requiredRules" required></v-text-field>
+            </v-form>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="cancel">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="setForm">
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-              <v-text-field v-model="form.harga" label="Harga" required></v-text-field>
-
-            </v-container>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="cancel">
-              Cancel
+    //TODO tambah edit detailStok
+    <v-dialog v-model="dialogDetail">
+      <v-card>
+        <h3 class="text-h3 font-weight-medium mb-5"> Data Detail {{ namaStok }} </h3>
+        <v-card-title>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+          <v-spacer></v-spacer>
+          <v-btn color="success" dark @click="dialogTambahDetail = true">
+            Tambah
+          </v-btn>
+        </v-card-title>
+        <v-data-table :headers="headersDetail" :items="detailStokBahan" :search="search">
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
+              edit
             </v-btn>
-            <v-btn color="blue darken-1" text @click="setForm">
-              Save
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+          </template>
+        </v-data-table>
+      </v-card>
+    </v-dialog>
 
       <v-snackbar v-model="snackbar" :color="color" timeout="2000" bottom>
         {{error_message}}
@@ -115,14 +133,47 @@
         editId: '',
         deleteId: '',
         unitItems: ["gram", "ml"],
+        requiredRules: [
+          v => !!v || 'This field is required'
+        ],
+        dialogDetail: false,
+        dialogTambahDetail: false,
+        headersDetail: [{
+            text: "Tanggal Masuk",
+            align: "start",
+            sortable: true,
+            value: "TANGGAL_MASUK_STOK"
+          },
+          {
+            text: "Incoming Stok",
+            value: "INCOMING_STOK"
+          },
+          {
+            text: "Remaining Stok",
+            value: "REMAINING_STOK"
+          },
+          {
+            text: "Waste Stok",
+            value: "WASTE_STOK"
+          },
+          {
+            text: "Actions",
+            value: "actions"
+          },
+        ],
+        detailStokBahan: [],
+        stokID: '',
+        namaStok: '',
       };
     },
     methods: {
       setForm() {
-        if (this.inputType === 'Tambah') {
-          this.save()
-        } else {
-          this.update()
+        if(this.$refs.form.validate()) {
+          if (this.inputType === 'Tambah') {
+            this.save()
+          } else {
+            this.update()
+          }
         }
       },
       //read data
@@ -252,6 +303,27 @@
           return 1
         else
           return 0
+      },
+      readDetail(idStok) {
+        var url = this.$api + '/detailStok/' + idStok
+        this.$http.get(url, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          this.detailStokBahan = response.data.data
+          this.dialogDetail = true
+        }).catch(error => {
+          this.error_message = error.response.data.message;
+          this.color = "red"
+          this.snackbar = true;
+          this.load = false;
+        })
+      },
+      showDetail(item) {
+        this.stokID = item.ID_STOK
+        this.namaStok = item.NAMA_STOK
+        this.readDetail(this.stokID)
       }
     },
     computed: {
