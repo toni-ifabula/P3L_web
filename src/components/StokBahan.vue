@@ -25,7 +25,7 @@
             <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
               edit
             </v-btn>
-            <v-btn small class="mr-2" @click="showDetail(item)" color="yellow">
+            <v-btn small class="mr-2" @click="detailHandler(item)" color="orange">
               Detail
             </v-btn>
           </template>
@@ -41,13 +41,16 @@
           <v-container>
             <v-form ref="form">
               <v-text-field v-model="form.nama" label="Nama Stok Bahan" :rules="requiredRules" required></v-text-field>
+
               <v-select
                 v-model="form.unit"
                 :items="unitItems"
                 label="Unit"
                 :rules="requiredRules"
               ></v-select>
+
               <v-text-field v-model="form.harga" label="Harga" :rules="requiredRules" required></v-text-field>
+
             </v-form>
           </v-container>
         </v-card-text>
@@ -63,10 +66,9 @@
       </v-card>
     </v-dialog>
 
-    //TODO tambah edit detailStok
     <v-dialog v-model="dialogDetail">
       <v-card>
-        <h3 class="text-h3 font-weight-medium mb-5"> Data Detail {{ namaStok }} </h3>
+        <h3 class="text-h3 font-weight-medium mb-5"> Data Detail {{ selectedNamaStok }} </h3>
         <v-card-title>
           <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
           <v-spacer></v-spacer>
@@ -76,11 +78,59 @@
         </v-card-title>
         <v-data-table :headers="headersDetail" :items="detailStokBahan" :search="search">
           <template v-slot:[`item.actions`]="{ item }">
-            <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
+            <v-btn small class="mr-2" @click="editHandlerDetail(item)" color="blue">
               edit
             </v-btn>
           </template>
         </v-data-table>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogTambahDetail" max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">{{ formTitle }} Data Detail {{ selectedNamaStok }}</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-form ref="form">
+
+              <v-menu
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="formDetail.tanggal"
+                      label="Tanggal Masuk"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                      :rules="requiredRules"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="formDetail.tanggal"
+                  ></v-date-picker>
+                </v-menu>
+
+              <v-text-field v-model="formDetail.incoming" label="Incoming Stok" type="number" :rules="requiredRules" required></v-text-field>
+
+              <v-text-field v-model="formDetail.remaining" label="Remaining Stok" type="number" :rules="requiredRules" required></v-text-field>
+
+              <v-text-field v-model="formDetail.waste" label="Waste Stok" type="number" :rules="requiredRules" required></v-text-field>
+            </v-form>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="cancelDetail">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="setFormDetail">
+            Save
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -162,8 +212,16 @@
           },
         ],
         detailStokBahan: [],
-        stokID: '',
-        namaStok: '',
+        selectedStokID: '',
+        selectedNamaStok: '',
+        detailFormData: new FormData,
+        formDetail: {
+          tanggal: null,
+          incoming: null,
+          remaining: null,
+          waste: null,
+        },
+        DetailEditID: '',
       };
     },
     methods: {
@@ -251,36 +309,6 @@
         this.form.harga = item.HARGA_STOK;
         this.dialog = true;
       },
-      //hapus data
-      deleteData() {
-        //mengahapus data 
-        var url = this.$api + '/stokBahan/' + this.deleteId;
-        //data dihapus berdasarkan id 
-        this.$http.delete(url, {
-          headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
-          }
-        }).then(response => {
-          this.error_message = response.data.message;
-          this.color = "green"
-          this.snackbar = true;
-          this.load = false;
-          this.close();
-          this.readData(); //mengambil data
-          this.resetForm();
-          this.inputType = 'Tambah';
-          this.dialogConfirm = false;
-        }).catch(error => {
-          this.error_message = error.response.data.message;
-          this.color = "red"
-          this.snackbar = true;
-          this.load = false;
-        })
-      },
-      deleteHandler(id) {
-        this.deleteId = id;
-        this.dialogConfirm = true;
-      },
       close() {
         this.dialog = false
         this.inputType = 'Tambah';
@@ -304,7 +332,19 @@
         else
           return 0
       },
-      readDetail(idStok) {
+
+      // DETAIL METHOD
+
+      setFormDetail() {
+        if(this.$refs.form.validate()) {
+          if (this.inputType === 'Tambah') {
+            this.saveDetail()
+          } else {
+            this.updateDetail()
+          }
+        }
+      },
+      readDataDetail(idStok) {
         var url = this.$api + '/detailStok/' + idStok
         this.$http.get(url, {
           headers: {
@@ -314,17 +354,105 @@
           this.detailStokBahan = response.data.data
           this.dialogDetail = true
         }).catch(error => {
+          this.dialogDetail = true
           this.error_message = error.response.data.message;
           this.color = "red"
           this.snackbar = true;
           this.load = false;
         })
       },
-      showDetail(item) {
-        this.stokID = item.ID_STOK
-        this.namaStok = item.NAMA_STOK
-        this.readDetail(this.stokID)
-      }
+      detailHandler(item) {
+        this.selectedStokID = item.ID_STOK
+        this.selectedNamaStok = item.NAMA_STOK
+        this.detailStokBahan = []   // clean data detail
+        this.readDataDetail(this.selectedStokID)
+      },
+      saveDetail() {
+        this.detailFormData.append('ID_STOK', this.selectedStokID);
+        this.detailFormData.append('TANGGAL_MASUK_STOK', this.formDetail.tanggal);
+        this.detailFormData.append('INCOMING_STOK', this.formDetail.incoming);
+        this.detailFormData.append('REMAINING_STOK', this.formDetail.incoming);
+        this.detailFormData.append('WASTE_STOK', this.formDetail.waste);
+
+        var url = this.$api + '/detailStok'
+        this.load = true
+        this.$http.post(url, this.detailFormData, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          this.error_message = response.data.message;
+          this.color = "green"
+          this.snackbar = true;
+          this.load = false;
+          this.closeDetail();
+          this.readDataDetail(this.selectedStokID); //mengambil data
+          this.resetFormDetail();
+        }).catch(error => {
+          this.error_message = error.response.data.message;
+          this.color = "red"
+          this.snackbar = true;
+          this.load = false;
+        })
+      },
+      //ubah data
+      updateDetail() {
+        let newData = {
+          ID_STOK: this.selectedStokID,
+          TANGGAL_MASUK_STOK: this.formDetail.tanggal,
+          INCOMING_STOK: this.formDetail.incoming,
+          REMAINING_STOK: this.formDetail.remaining,
+          WASTE_STOK: this.formDetail.waste,
+        }
+        var url = this.$api + '/detailStok/' + this.DetailEditID;
+        this.load = true
+        this.$http.put(url, newData, {
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+          }
+        }).then(response => {
+          this.error_message = response.data.message;
+          this.color = "green"
+          this.snackbar = true;
+          this.load = false;
+          this.closeDetail();
+          this.readDataDetail(this.selectedStokID); //mengambil data
+          this.resetFormDetail();
+          this.inputType = 'Tambah';
+        }).catch(error => {
+          this.error_message = error.response.data.message;
+          this.color = "red"
+          this.snackbar = true;
+          this.load = false;
+        })
+      },
+      editHandlerDetail(item) {
+        this.inputType = 'Ubah';
+        this.DetailEditID = item.ID_DETAIL_STOK;
+        this.formDetail.tanggal = item.TANGGAL_MASUK_STOK;
+        this.formDetail.incoming = item.INCOMING_STOK;
+        this.formDetail.remaining = item.REMAINING_STOK;
+        this.formDetail.waste = item.WASTE_STOK;
+        this.dialogTambahDetail = true;
+      },
+      closeDetail() {
+        this.dialogTambahDetail = false
+        this.inputType = 'Tambah';
+      },
+      cancelDetail() {
+        this.resetFormDetail();
+        this.readDataDetail(this.selectedStokID);
+        this.dialogTambahDetail = false;
+        this.inputType = 'Tambah';
+      },
+      resetFormDetail() {
+        this.formDetail = {
+          tanggal: null,
+          incoming: null,
+          remaining: null,
+          waste: null,
+        };
+      },
     },
     computed: {
       formTitle() {
