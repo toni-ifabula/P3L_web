@@ -31,10 +31,10 @@
           </template>
 
           <template v-slot:[`item.actions`]="{ item }">
-            <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
+            <v-btn small class="mr-2" @click="editHandler(item)" color="blue" block>
               edit
             </v-btn>
-            <v-btn small @click="resignStatus(item.ID_KARYAWAN)" color="orange">
+            <v-btn small @click="resignStatus(item.ID_KARYAWAN)" color="orange" block>
               Nonaktifkan
             </v-btn>
           </template>
@@ -71,7 +71,7 @@
 
                 <v-text-field v-model="form.email" label="Email" type="email" :rules="requiredRules" required></v-text-field>
 
-                <v-text-field v-model="form.password" label="Password" type="password" :rules="passwordRules" required></v-text-field>
+                <v-text-field v-if="inputType === 'Tambah'" v-model="form.password" label="Password" type="password" :rules="passwordRules" required></v-text-field>
 
                 <v-menu
                   offset-y
@@ -104,7 +104,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="cancel">
+            <v-btn color="red" text @click="cancel">
               Cancel
             </v-btn>
             <v-btn color="blue darken-1" text @click="setForm">
@@ -141,7 +141,7 @@
             value: "NAMA_KARYAWAN"
           },
           {
-            text: "Role",
+            text: "ID Role",
             value: "ID_ROLE"
           },
           {
@@ -322,12 +322,14 @@
       close() {
         this.dialog = false
         this.inputType = 'Tambah';
+        this.selectedRoleID = null;    // clear variable value
       },
       cancel() {
         this.resetForm();
         this.readData();
         this.dialog = false;
         this.inputType = 'Tambah';
+        this.selectedRoleID = null;    // clear variable value
       },
       resetForm() {
         this.form = {

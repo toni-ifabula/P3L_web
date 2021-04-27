@@ -89,7 +89,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="cancel">
+            <v-btn color="red" text @click="cancel">
               Cancel
             </v-btn>
             <v-btn color="blue darken-1" text @click="setForm">
@@ -109,7 +109,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialogConfirm = false">
+            <v-btn color="red" text @click="dialogConfirm = false">
               Cancel
             </v-btn>
             <v-btn color="blue darken-1" text @click="deleteData">
@@ -304,12 +304,16 @@
       close() {
         this.dialog = false
         this.inputType = 'Tambah';
+        this.selectedMejaID = null;   //clear value
+        this.selectedCustomerID = null;   //clear value
       },
       cancel() {
         this.resetForm();
         this.readData();
         this.dialog = false;
         this.inputType = 'Tambah';
+        this.selectedMejaID = null;   //clear value
+        this.selectedCustomerID = null;   //clear value
       },
       resetForm() {
         this.form = {

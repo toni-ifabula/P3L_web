@@ -52,7 +52,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="cancel">
+            <v-btn color="red" text @click="cancel">
               Cancel
             </v-btn>
             <v-btn color="blue darken-1" text @click="setForm">
@@ -72,7 +72,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialogConfirm = false">
+            <v-btn color="red" text @click="dialogConfirm = false">
               Cancel
             </v-btn>
             <v-btn color="blue darken-1" text @click="deleteData">
@@ -102,7 +102,12 @@
         search: null,
         dialog: false,
         dialogConfirm: false,
-        headers: [{
+        headers: [
+          {
+            text: "ID Customer",
+            value: "ID_CUSTOMER"
+          },
+          {
             text: "Nama Customer",
             align: "start",
             sortable: true,

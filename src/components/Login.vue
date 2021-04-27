@@ -94,7 +94,7 @@ export default {
           })
           .then((response) => {
             if (response.data.user.STATUS_KARYAWAN === 'Resign') {
-              alert("Anda Sudah Resign")
+              alert("Anda Sudah Resign. Tidak Bisa Masuk Kedalam Sistem.")
             } else {
               localStorage.setItem("current_id", response.data.user.ID_KARYAWAN); //menyimpan id user yang sedang login
               localStorage.setItem("current_role", response.data.user.ID_ROLE);

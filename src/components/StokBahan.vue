@@ -56,7 +56,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="cancel">
+          <v-btn color="red" text @click="cancel">
             Cancel
           </v-btn>
           <v-btn color="blue darken-1" text @click="setForm">
@@ -66,6 +66,7 @@
       </v-card>
     </v-dialog>
 
+    //FIXME automatic calculation
     <v-dialog v-model="dialogDetail">
       <v-card>
         <h3 class="text-h3 font-weight-medium mb-5"> Data Detail {{ selectedNamaStok }} </h3>
@@ -124,7 +125,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="cancelDetail">
+          <v-btn color="red" text @click="cancelDetail">
             Cancel
           </v-btn>
           <v-btn color="blue darken-1" text @click="setFormDetail">
@@ -154,7 +155,12 @@
         search: null,
         dialog: false,
         dialogConfirm: false,
-        headers: [{
+        headers: [
+          {
+            text: "ID Stok Bahan",
+            value: "ID_STOK"
+          },
+          {
             text: "Nama Stok",
             align: "start",
             sortable: true,
