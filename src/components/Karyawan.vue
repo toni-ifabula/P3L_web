@@ -20,7 +20,7 @@
             Tambah
           </v-btn>
         </v-card-title>
-        <v-data-table :headers="headers" :items="karyawan" :search="search">
+        <v-data-table :headers="headers" :items="karyawan" :search="search" :loading="loading" loading-text="Loading... Please wait">
           <template v-slot:[`item.STATUS_KARYAWAN`]="{ item }">
             <v-chip
               :color="getStatusColor(item.STATUS_KARYAWAN)"
@@ -34,11 +34,41 @@
             <v-btn small class="mr-2" @click="editHandler(item)" color="blue" block>
               edit
             </v-btn>
-            <v-btn small @click="resignStatus(item.ID_KARYAWAN)" color="orange" block>
+            <v-btn small @click="resignHandler(item)" color="orange" block>
               Nonaktifkan
             </v-btn>
           </template>
+
         </v-data-table>
+      </v-card>
+
+      <hr>
+
+      <p>Info Role</p>
+      <v-card max-width="200px">
+      <v-simple-table dense>
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th class="text-left">
+                ID Role
+              </th>
+              <th class="text-left">
+                Nama Role
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="item in infoRole"
+              :key="item.id"
+            >
+              <td>{{ item.id }}</td>
+              <td>{{ item.nama }}</td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
       </v-card>
 
       <v-dialog v-model="dialog" max-width="600px" persistent>
@@ -113,6 +143,26 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <v-dialog v-model="dialogConfirm" persistent max-width="400px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">warning!</span>
+        </v-card-title>
+        <v-card-text>
+          Anda yakin ingin menonaktifkan karyawan ini?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red" text @click="dialogConfirm = false">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="resignStatus()">
+            Confirm
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
       <v-snackbar v-model="snackbar" :color="color" timeout="2000" bottom>
         {{error_message}}
@@ -197,6 +247,30 @@
           v => !!v || 'This field is required',
           v => (v && v.length >= 10 && v.length <= 12) || 'Nomor telepon harus 10-12 angka'
         ],
+        infoRole: [
+          {
+            id: '1',
+            nama: 'Owner'
+          },
+          {
+            id: '2',
+            nama: 'Ops Manager'
+          },
+          {
+            id: '3',
+            nama: 'Waiter'
+          },
+          {
+            id: '4',
+            nama: 'Cashier'
+          },
+          {
+            id: '5',
+            nama: 'Chef'
+          }
+        ],
+        resignID: '',
+        loading: true,
       };
     },
     methods: {
@@ -218,6 +292,7 @@
           }
         }).then(response => {
           this.karyawan = response.data.data
+          this.loading = false;
         })
       },
       //simpan data
@@ -299,8 +374,8 @@
         this.form.status = item.STATUS_KARYAWAN;
         this.dialog = true;
       },
-      resignStatus(resignID) {
-        var url = this.$api + '/resignKaryawan/'+ resignID;
+      resignStatus() {
+        var url = this.$api + '/resignKaryawan/'+ this.resignID;
         this.load = true
         this.$http.put(url, null, {
           headers: {
@@ -312,12 +387,18 @@
           this.snackbar = true;
           this.load = false;
           this.readData(); //mengambil data
+          this.dialogConfirm = false;
         }).catch(error => {
           this.error_message = error.response.data.message;
           this.color = "red"
           this.snackbar = true;
           this.load = false;
+          this.dialogConfirm = false;
         })
+      },
+      resignHandler(item) {
+        this.resignID = item.ID_KARYAWAN;
+        this.dialogConfirm = true;
       },
       close() {
         this.dialog = false
@@ -345,7 +426,6 @@
         else return 'orange'
       },
       haveAccess(){
-        //FIXME auth role
         if(localStorage.getItem("current_role") === '1' || localStorage.getItem("current_role") === '2')
           return 1
         else

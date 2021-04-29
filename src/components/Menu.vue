@@ -12,8 +12,7 @@
           Tambah
         </v-btn>
       </v-card-title>
-      //FIXME show bahan in string
-      <v-data-table :headers="headers" :items="menu" :search="search">
+      <v-data-table :headers="headers" :items="menu" :search="search" :loading="loading" loading-text="Loading... Please wait">
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn small class="mr-2" @click="editHandler(item)" color="blue" v-if="haveAccess() == 1">
             edit
@@ -167,6 +166,7 @@
         requiredRules: [
           v => !!v || 'This field is required'
         ],
+        loading: true,
       };
     },
     methods: {
@@ -188,6 +188,7 @@
           }
         }).then(response => {
           this.menu = response.data.data
+          this.loading = false
         })
       },
       //simpan data
@@ -316,8 +317,7 @@
         };
       },
       haveAccess() {
-        //FIXME auth role
-        if(localStorage.getItem("current_role") === '1')
+        if(localStorage.getItem("current_role") === '2')
           return 1
         else
           return 0

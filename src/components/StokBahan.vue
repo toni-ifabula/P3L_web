@@ -14,7 +14,7 @@
 
       <v-card>
         <v-card-title>
-          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" :loading="loading" loading-text="Loading... Please wait" single-line hide-details></v-text-field>
           <v-spacer></v-spacer>
           <v-btn color="success" dark @click="dialog = true">
             Tambah
@@ -49,7 +49,7 @@
                 :rules="requiredRules"
               ></v-select>
 
-              <v-text-field v-model="form.harga" label="Harga" :rules="requiredRules" required></v-text-field>
+              <v-text-field prefix="Rp" type="number" v-model="form.harga" label="Harga" :rules="requiredRules" required></v-text-field>
 
             </v-form>
           </v-container>
@@ -228,6 +228,7 @@
           waste: null,
         },
         DetailEditID: '',
+        loading: true,
       };
     },
     methods: {
@@ -249,6 +250,7 @@
           }
         }).then(response => {
           this.stokBahan = response.data.data
+          this.loading = false
         })
       },
       //simpan data
@@ -333,7 +335,7 @@
         };
       },
       haveAccess() {
-        if(localStorage.getItem("current_role") === '1' || localStorage.getItem("current_role") === '5')
+        if(localStorage.getItem("current_role") === '2' || localStorage.getItem("current_role") === '5')
           return 1
         else
           return 0

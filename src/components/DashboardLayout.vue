@@ -3,12 +3,6 @@
 <template>
   <div class="dashboard">
     <v-navigation-drawer v-model="drawer" class="fullheight" width="256" app>
-      <!-- <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title class="title"> Antonius Wicaksana Nugraha </v-list-item-title>
-          <v-list-item-subtitle> 180709861 </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item> -->
       <v-row justify="center">
         <img :src="require('@/assets/logo_toko.png')">
       </v-row>
@@ -20,7 +14,7 @@
           color="primary"
         >
           <v-list-item
-            v-for="item in items"
+            v-for="item in dashboardFilter"
             :key="item.title"
             link
             tag="router-link"
@@ -56,7 +50,12 @@ export default {
   data() {
     return {
       drawer: true,
-      items: [
+      itemsOwner: [
+        { title: "Dashboard", icon: "space_dashboard", to: "/dashboard" },
+        { title: "Karyawan", icon: "badge", to: "/karyawan" },
+        { title: "Meja", icon: "deck", to: "/meja" },
+      ],
+      itemsManager: [
         { title: "Dashboard", icon: "space_dashboard", to: "/dashboard" },
         { title: "Karyawan", icon: "badge", to: "/karyawan" },
         { title: "Meja", icon: "deck", to: "/meja" },
@@ -64,7 +63,31 @@ export default {
         { title: "Reservasi", icon: "menu_book", to: "/reservasi" },
         { title: "Menu", icon: "restaurant_menu", to: "/menu" },
         { title: "Stok Bahan", icon: "inventory", to: "/stokBahan" },
+        { title: "Pesanan", icon: "shopping_cart", to: "/pesanan"},
+        { title: "Transaksi", icon: "paid", to: "/transaksi"},
+        { title: "Laporan", icon: "summarize", to: "/laporan"},
       ],
+      itemsWaiter: [
+        { title: "Dashboard", icon: "space_dashboard", to: "/dashboard" },
+        { title: "Meja", icon: "deck", to: "/meja" },
+        { title: "Customer", icon: "people", to: "/customer" },
+        { title: "Reservasi", icon: "menu_book", to: "/reservasi" },
+        { title: "Menu", icon: "restaurant_menu", to: "/menu" },
+        { title: "Pesanan", icon: "shopping_cart", to: "/pesanan"},
+      ],
+      itemsCashier: [
+        { title: "Dashboard", icon: "space_dashboard", to: "/dashboard" },
+        { title: "Meja", icon: "deck", to: "/meja" },
+        { title: "Menu", icon: "restaurant_menu", to: "/menu" },
+        { title: "Pesanan", icon: "shopping_cart", to: "/pesanan"},
+        { title: "Transaksi", icon: "paid", to: "/transaksi"},
+      ],
+      itemsChef: [
+        { title: "Dashboard", icon: "space_dashboard", to: "/dashboard" },
+        { title: "Meja", icon: "deck", to: "/meja" },
+        { title: "Stok Bahan", icon: "inventory", to: "/stokBahan" },
+        { title: "Pesanan", icon: "shopping_cart", to: "/pesanan"},
+      ]
     };
   },
 
@@ -77,21 +100,30 @@ export default {
         name: "login",
       });
     },
-    readUserData() {
-      var url = this.$api + '/user'
-        this.$http.get(url, {
-          headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('current_token')
-          }
-        }).then(response => {
-          this.products = response.data.data
-        })
+  },
+
+  computed: {
+    dashboardFilter: function() {
+      if(localStorage.getItem("current_role") === '1') {
+        return this.itemsOwner
+      } else if(localStorage.getItem("current_role") === '2') {
+        return this.itemsManager
+      } else if(localStorage.getItem("current_role") === '3') {
+        return this.itemsWaiter
+      } else if(localStorage.getItem("current_role") === '4') {
+        return this.itemsCashier
+      } else if(localStorage.getItem("current_role") === '5') {
+        return this.itemsChef
+      }
+
+      return null;
     }
   },
 
   mounted() {
-    this.readUserData();
-  },
+    this.dashboardFilter();
+  }
+
 };
 </script>
 

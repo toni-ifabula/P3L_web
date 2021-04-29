@@ -12,7 +12,7 @@
           Tambah
         </v-btn>
       </v-card-title>
-      <v-data-table :headers="headers" :items="meja" :search="search">
+      <v-data-table :headers="headers" :items="meja" :search="search" :loading="loading" loading-text="Loading... Please wait">
         <template v-slot:[`item.STATUS_MEJA`]="{ item }">
           <v-chip
             :color="getStatusColor(item.STATUS_MEJA)"
@@ -137,6 +137,7 @@
         requiredRules: [
           v => !!v || 'This field is required'
         ],
+        loading: true,
       };
     },
     methods: {
@@ -158,6 +159,7 @@
           }
         }).then(response => {
           this.meja = response.data.data
+          this.loading = false
         })
       },
       //simpan data

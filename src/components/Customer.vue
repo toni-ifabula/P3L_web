@@ -20,7 +20,7 @@
             Tambah
           </v-btn>
         </v-card-title>
-        <v-data-table :headers="headers" :items="customer" :search="search">
+        <v-data-table :headers="headers" :items="customer" :search="search" :loading="loading" loading-text="Loading... Please wait">
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
               edit
@@ -138,6 +138,7 @@
         requiredRules: [
           v => !!v || 'This field is required'
         ],
+        loading: true,
       };
     },
     methods: {
@@ -159,6 +160,7 @@
           }
         }).then(response => {
           this.customer = response.data.data
+          this.loading = false;
         })
       },
       //simpan data
@@ -275,8 +277,7 @@
         };
       },
       haveAccess(){
-        //FIXME auth role
-        if(localStorage.getItem("current_role") === '1' || localStorage.getItem("current_role") === '3')
+        if(localStorage.getItem("current_role") === '2' || localStorage.getItem("current_role") === '3')
           return 1
         else
           return 0
