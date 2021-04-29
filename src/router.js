@@ -74,7 +74,7 @@ const router = new VueRouter({
                 },
             ],
             beforeEnter: (to, from, next) => {
-                if(localStorage.getItem("current_token") == 0) {
+                if(localStorage.getItem("current_token") == null) {
                     next({name: 'login'});
                 } else {
                     next();
