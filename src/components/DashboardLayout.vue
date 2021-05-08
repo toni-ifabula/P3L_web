@@ -19,6 +19,7 @@
             link
             tag="router-link"
             :to="item.to"
+            color="#D34841"
           >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
@@ -30,12 +31,12 @@
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar app fixed height="75px">
+    <v-app-bar app fixed height="75px" color="#D34841">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <VSpacer />
       <v-toolbar-items>
         <v-btn text router :to="'profile'"><v-icon large>person</v-icon></v-btn>
-        <v-btn text router @click="logout()"><v-icon large color="red">mdi-power</v-icon></v-btn>
+        <v-btn text router @click="logout()"><v-icon large>mdi-power</v-icon></v-btn>
       </v-toolbar-items>
     </v-app-bar>
     <div class="fullheight pa-5">
@@ -119,10 +120,6 @@ export default {
       return null;
     }
   },
-
-  mounted() {
-    this.dashboardFilter();
-  }
 
 };
 </script>

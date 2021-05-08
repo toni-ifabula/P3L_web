@@ -12,7 +12,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.config.productionTip = false
 
 Vue.prototype.$http = axios;
-Vue.prototype.$api = 'http://127.0.0.1:8000/api';
+Vue.prototype.$api = 'http://192.168.100.37:8000/api';
 
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue)

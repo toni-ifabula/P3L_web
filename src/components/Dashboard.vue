@@ -1,9 +1,9 @@
 <template>
     <v-main>
 
-        <br>
-        <h1 style="margin-left: 24rem;">Selamat Datang</h1>
-        <br><br>
+        <v-row justify="center">
+        <h1 style="margin-top: 5rem">Selamat Datang</h1>
+        </v-row>
 
         <v-row justify="center">
             <img :src="require('@/assets/logo_toko2.png')" height="300px">

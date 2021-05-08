@@ -66,7 +66,6 @@
       </v-card>
     </v-dialog>
 
-    //FIXME automatic calculation
     <v-dialog v-model="dialogDetail">
       <v-card>
         <h3 class="text-h3 font-weight-medium mb-5"> Data Detail {{ selectedNamaStok }} </h3>

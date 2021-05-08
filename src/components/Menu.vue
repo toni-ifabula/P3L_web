@@ -12,7 +12,11 @@
           Tambah
         </v-btn>
       </v-card-title>
-      <v-data-table :headers="headers" :items="menu" :search="search" :loading="loading" loading-text="Loading... Please wait">
+      <v-data-table 
+        :headers="headers" 
+        :items="menu" 
+        :search="search" 
+        :loading="loading" loading-text="Loading... Please wait">
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn small class="mr-2" @click="editHandler(item)" color="blue" v-if="haveAccess() == 1">
             edit
@@ -60,6 +64,8 @@
               ></v-select>
 
               <v-text-field prefix="Rp" v-model="form.harga" label="Harga" type="number" :rules="requiredRules" required></v-text-field>
+
+              <v-text-field v-model="form.image" label="URL Gambar" :rules="requiredRules" required></v-text-field>
             </v-form>
 
           </v-container>
@@ -132,7 +138,8 @@
           },
           {
             text: "Deskripsi",
-            value: "DESKRIPSI_MENU"
+            value: "DESKRIPSI_MENU",
+            cellClass: "text-wrap"
           },
           {
             text: "Unit",
@@ -156,6 +163,7 @@
           deskripsi: null,
           unit: null,
           harga: null,
+          image: null,
         },
         editId: '',
         deleteId: '',
@@ -199,6 +207,7 @@
         this.menuFormData.append('DESKRIPSI_MENU', this.form.deskripsi);
         this.menuFormData.append('UNIT_MENU', this.form.unit);
         this.menuFormData.append('HARGA_MENU', this.form.harga);
+        this.menuFormData.append('IMAGE', this.form.image);
 
         var url = this.$api + '/menu'
         this.load = true
@@ -230,6 +239,7 @@
           DESKRIPSI_MENU: this.form.deskripsi,
           UNIT_MENU: this.form.unit,
           HARGA_MENU: this.form.harga,
+          IMAGE: this.form.image,
         }
         var url = this.$api + '/menu/' + this.editId;
         this.load = true
@@ -262,6 +272,7 @@
         this.form.deskripsi = item.DESKRIPSI_MENU;
         this.form.unit = item.UNIT_MENU;
         this.form.harga = item.HARGA_MENU;
+        this.form.image = item.IMAGE;
         this.dialog = true;
       },
       //hapus data
@@ -314,6 +325,7 @@
           deskripsi: null,
           unit: null,
           harga: null,
+          image: null,
         };
       },
       haveAccess() {
