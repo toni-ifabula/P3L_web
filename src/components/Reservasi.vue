@@ -204,6 +204,12 @@
         }).then(response => {
           this.reservasi = response.data.data
           this.loading = false
+        }).catch(error => {
+          this.error_message = error.response.data.message;
+          this.color = "red"
+          this.snackbar = true;
+          this.load = false;
+          this.loading = false
         })
       },
       //simpan data

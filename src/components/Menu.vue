@@ -18,10 +18,10 @@
         :search="search" 
         :loading="loading" loading-text="Loading... Please wait">
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn small class="mr-2" @click="editHandler(item)" color="blue" v-if="haveAccess() == 1">
+          <v-btn small class="mr-2" @click="editHandler(item)" color="blue" block v-if="haveAccess() == 1">
             edit
           </v-btn>
-          <v-btn small @click="deleteHandler(item.ID_MENU)" color="red" v-if="haveAccess() == 1">
+          <v-btn small @click="deleteHandler(item.ID_MENU)" color="red" block v-if="haveAccess() == 1">
             delete
           </v-btn>
         </template>
@@ -139,7 +139,7 @@
           {
             text: "Deskripsi",
             value: "DESKRIPSI_MENU",
-            cellClass: "text-wrap"
+            Class: "text-wrap"
           },
           {
             text: "Unit",
@@ -196,6 +196,12 @@
           }
         }).then(response => {
           this.menu = response.data.data
+          this.loading = false
+        }).catch(error => {
+          this.error_message = error.response.data.message;
+          this.color = "red"
+          this.snackbar = true;
+          this.load = false;
           this.loading = false
         })
       },
