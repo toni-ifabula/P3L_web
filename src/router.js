@@ -72,6 +72,13 @@ const router = new VueRouter({
                     meta: {title: 'Stok Bahan'},
                     component: importComponent('StokBahan'),
                 },
+                // QR code
+                {
+                    path: "/qr",
+                    name: "QRCode",
+                    meta: {title: 'QR Code'},
+                    component: importComponent('QRCode'),
+                },
             ],
             beforeEnter: (to, from, next) => {
                 if(localStorage.getItem("current_token") == null) {

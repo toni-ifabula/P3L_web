@@ -99,6 +99,7 @@ export default {
               localStorage.setItem("current_id", response.data.user.ID_KARYAWAN); //menyimpan id user yang sedang login
               localStorage.setItem("current_role", response.data.user.ID_ROLE);
               localStorage.setItem("current_token", response.data.access_token); //menyimpan auth token
+              localStorage.setItem("current_nama", response.data.user.NAMA_KARYAWAN);
               this.error_message = response.data.message;
               this.color = "green";
               this.snackbar = true;

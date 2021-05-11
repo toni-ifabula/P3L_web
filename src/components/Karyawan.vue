@@ -31,10 +31,10 @@
           </template>
 
           <template v-slot:[`item.actions`]="{ item }">
-            <v-btn small class="mr-2" @click="editHandler(item)" color="blue" block>
+            <v-btn small class="mt-2 mb-2" @click="editHandler(item)" color="blue" block>
               edit
             </v-btn>
-            <v-btn small @click="resignHandler(item)" color="orange" block>
+            <v-btn small class="mb-2" @click="resignHandler(item)" color="orange" block>
               Nonaktifkan
             </v-btn>
           </template>

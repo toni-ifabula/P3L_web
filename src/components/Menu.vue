@@ -18,10 +18,10 @@
         :search="search" 
         :loading="loading" loading-text="Loading... Please wait">
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn small class="mr-2" @click="editHandler(item)" color="blue" block v-if="haveAccess() == 1">
+          <v-btn small class="mt-2 mb-2" @click="editHandler(item)" color="blue" block v-if="haveAccess() == 1">
             edit
           </v-btn>
-          <v-btn small @click="deleteHandler(item.ID_MENU)" color="red" block v-if="haveAccess() == 1">
+          <v-btn small class="mb-2" @click="deleteHandler(item.ID_MENU)" color="red" block v-if="haveAccess() == 1">
             delete
           </v-btn>
         </template>

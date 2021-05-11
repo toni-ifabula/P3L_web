@@ -25,8 +25,11 @@
             <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
               edit
             </v-btn>
-            <v-btn small @click="deleteHandler(item.ID_RESERVASI)" color="red">
+            <v-btn small class="mr-2" @click="deleteHandler(item.ID_RESERVASI)" color="red">
               delete
+            </v-btn>
+            <v-btn small class="mr-2" @click="showQR(item.ID_RESERVASI)" color="orange">
+              QR Code
             </v-btn>
           </template>
         </v-data-table>
@@ -119,6 +122,33 @@
         </v-card>
       </v-dialog>
 
+      <v-dialog v-model="dialogQR" max-width="500px">
+        <v-card>
+          <v-row justify="center">
+            <img class="mt-5" :src="require('@/assets/logo_toko2.png')" height="200px">
+          </v-row>
+
+          <v-row justify="center">
+            <img :src="qrURL" height="200px">
+          </v-row>
+          
+          <v-row justify="center">
+              <p style="font-weight: bold;">Printed {{ dateTime }}</p>
+          </v-row>
+
+          <v-row justify="center">
+            <p>Printed by {{ namaPrinter }}</p>
+          </v-row>
+
+          <div style="margin-top: 2rem">
+            <hr>
+            <v-row justify="center">
+              <h4 style="font-weight: bold;">FUN PLACE TO GRILL</h4>
+            </v-row>
+          </div>
+        </v-card>
+      </v-dialog>
+
       <v-snackbar v-model="snackbar" :color="color" timeout="2000" bottom>
         {{error_message}}
       </v-snackbar>
@@ -127,6 +157,9 @@
   </v-main>
 </template>
 <script>
+  import QRCode from 'qrcode'
+  import ProfileVue from './Profile.vue';
+
   export default {
     name: "List",
     data() {
@@ -182,6 +215,10 @@
           v => !!v || 'This field is required'
         ],
         loading: true,
+        dialogQR: false,
+        qrURL: '',
+        dateTime: '',
+        namaPrinter: '',
       };
     },
     methods: {
@@ -382,6 +419,28 @@
           this.selectedCustomerID = response.data.data[0].ID_CUSTOMER;
         })
       },
+      showQR(item) {
+        var id = item.toString();
+        QRCode.toDataURL(id)
+          .then(url => {
+            this.qrURL = url;
+          })
+          .catch(err => {
+            console.error(err)
+          })
+        
+        var currentdate = new Date(); 
+        this.dateTime = currentdate.getDate() + "/"
+                        + (currentdate.getMonth()+1)  + "/" 
+                        + currentdate.getFullYear() + " @ "
+                        + currentdate.getHours() + ":"  
+                        + currentdate.getMinutes() + ":" 
+                        + currentdate.getSeconds();
+
+        this.namaPrinter = localStorage.getItem("current_nama");
+
+        this.dialogQR = true;
+      },
     },
     computed: {
       formTitle() {
@@ -395,3 +454,9 @@
     },
   };
 </script>
+
+<style>
+  .qr-content {
+    margin: auto;
+  }
+</style>
