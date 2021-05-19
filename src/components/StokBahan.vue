@@ -14,13 +14,13 @@
 
       <v-card>
         <v-card-title>
-          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" :loading="loading" loading-text="Loading... Please wait" single-line hide-details></v-text-field>
+          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
           <v-spacer></v-spacer>
           <v-btn color="success" dark @click="dialog = true">
             Tambah
           </v-btn>
         </v-card-title>
-        <v-data-table :headers="headers" :items="stokBahan" :search="search">
+        <v-data-table :headers="headers" :items="stokBahan" :search="search" :loading="loading" loading-text="Loading... Please wait">
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn small class="mr-2" @click="editHandler(item)" color="blue">
               edit
@@ -70,13 +70,13 @@
       <v-card>
         <h3 class="text-h3 font-weight-medium mb-5"> Data Detail {{ selectedNamaStok }} </h3>
         <v-card-title>
-          <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+          <v-text-field v-model="searchDetail" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
           <v-spacer></v-spacer>
           <v-btn color="success" dark @click="dialogTambahDetail = true">
             Tambah
           </v-btn>
         </v-card-title>
-        <v-data-table :headers="headersDetail" :items="detailStokBahan" :search="search">
+        <v-data-table :headers="headersDetail" :items="detailStokBahan" :search="searchDetail">
           <template v-slot:[`item.actions`]="{ item }">
             <v-btn small class="mr-2" @click="editHandlerDetail(item)" color="blue">
               edit
@@ -152,6 +152,7 @@
         error_message: '',
         color: '',
         search: null,
+        searchDetail: null,
         dialog: false,
         dialogConfirm: false,
         headers: [

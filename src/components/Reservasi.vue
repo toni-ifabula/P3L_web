@@ -122,28 +122,39 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="dialogQR" max-width="500px">
+      <v-dialog v-model="dialogQR" max-width="400px">
         <v-card>
-          <v-row justify="center">
-            <img class="mt-5" :src="require('@/assets/logo_toko2.png')" height="200px">
-          </v-row>
+          <div ref="document" style="width: 400px">
+            <ul>
+              <li>
+                <img class="mt-5" :src="require('@/assets/logo_toko2.png')" height="200px">
+              </li>
 
-          <v-row justify="center">
-            <img :src="qrURL" height="200px">
-          </v-row>
-          
-          <v-row justify="center">
-              <p style="font-weight: bold;">Printed {{ dateTime }}</p>
-          </v-row>
+              <li>
+                <img :src="qrURL" height="200px">
+              </li>
+              
+              <li>
+                  <p style="font-weight: bold;">Printed {{ dateTime }}</p><br>
+              </li>
 
-          <v-row justify="center">
-            <p>Printed by {{ namaPrinter }}</p>
-          </v-row>
+              <li>
+                <p>Printed by {{ namaPrinter }}</p>
+              </li>
 
-          <div style="margin-top: 2rem">
-            <hr>
+              <hr>
+              <li>
+                <h4 style="font-weight: bold;">FUN PLACE TO GRILL</h4>
+              </li>
+              <hr>
+            </ul>
+          </div>
+
+          <div>
             <v-row justify="center">
-              <h4 style="font-weight: bold;">FUN PLACE TO GRILL</h4>
+              <v-btn small class="mr-2" @click="printQR()" color="green">
+                Print
+              </v-btn>
             </v-row>
           </div>
         </v-card>
@@ -158,7 +169,7 @@
 </template>
 <script>
   import QRCode from 'qrcode'
-  import ProfileVue from './Profile.vue';
+  import html2pdf from 'html2pdf.js'
 
   export default {
     name: "List",
@@ -219,6 +230,7 @@
         qrURL: '',
         dateTime: '',
         namaPrinter: '',
+        idReservasi: '',
       };
     },
     methods: {
@@ -420,8 +432,8 @@
         })
       },
       showQR(item) {
-        var id = item.toString();
-        QRCode.toDataURL(id)
+        this.idReservasi = item.toString();
+        QRCode.toDataURL(this.idReservasi)
           .then(url => {
             this.qrURL = url;
           })
@@ -441,12 +453,24 @@
 
         this.dialogQR = true;
       },
+      printQR() {
+        html2pdf(this.$refs.document, {
+        margin: [0,2,0,0],
+        filename: "document.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { dpi: 192, letterRendering: true },
+        jsPDF: { unit: "in", format: "a4", orientation: "p" },
+      });
+      },
+      
     },
+
     computed: {
       formTitle() {
         return this.inputType
       },
     },
+
     mounted() {
       this.readData();
       this.getNomorMeja();
@@ -455,8 +479,18 @@
   };
 </script>
 
-<style>
-  .qr-content {
-    margin: auto;
-  }
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+	h1, h2 {
+		font-weight: normal;
+	}
+
+	ul {
+		list-style-type: none;
+		text-align: center;
+	}
+
+	a {
+		color: #42b983;
+	}
 </style>
