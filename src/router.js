@@ -72,12 +72,26 @@ const router = new VueRouter({
                     meta: {title: 'Stok Bahan'},
                     component: importComponent('StokBahan'),
                 },
-                // QR code
+                // Pesanan
                 {
-                    path: "/qr",
-                    name: "QRCode",
-                    meta: {title: 'QR Code'},
-                    component: importComponent('QRCode'),
+                    path: "/pesanan",
+                    name: "Pesanan",
+                    meta: {title: 'Pesanan'},
+                    component: importComponent('Pesanan'),
+                },
+                // PEMBAYARAN
+                {
+                    path: "/pembayaran",
+                    name: "Pembayaran",
+                    meta: {title: 'Pembayaran'},
+                    component: importComponent('Pembayaran'),
+                },
+                // Laporan
+                {
+                    path: "/laporan",
+                    name: "Laporan",
+                    meta: {title: 'Laporan'},
+                    component: importComponent('Laporan'),
                 },
             ],
             beforeEnter: (to, from, next) => {
