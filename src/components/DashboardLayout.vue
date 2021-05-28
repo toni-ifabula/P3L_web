@@ -65,7 +65,7 @@ export default {
         { title: "Menu", icon: "restaurant_menu", to: "/menu" },
         { title: "Stok Bahan", icon: "inventory", to: "/stokBahan" },
         { title: "Pesanan", icon: "shopping_cart", to: "/pesanan"},
-        { title: "Pembayaran", icon: "paid", to: "/pembayaran"},
+        { title: "Transaksi", icon: "paid", to: "/transaksi"},
         { title: "Laporan", icon: "summarize", to: "/laporan"},
       ],
       itemsWaiter: [
@@ -81,7 +81,7 @@ export default {
         { title: "Meja", icon: "deck", to: "/meja" },
         { title: "Menu", icon: "restaurant_menu", to: "/menu" },
         { title: "Pesanan", icon: "shopping_cart", to: "/pesanan"},
-        { title: "Pembayaran", icon: "paid", to: "/pembayaran"},
+        { title: "Transaksi", icon: "paid", to: "/transaksi"},
       ],
       itemsChef: [
         { title: "Dashboard", icon: "space_dashboard", to: "/dashboard" },

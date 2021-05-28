@@ -86,6 +86,13 @@ const router = new VueRouter({
                     meta: {title: 'Pembayaran'},
                     component: importComponent('Pembayaran'),
                 },
+                // Transaksi
+                {
+                    path: "/transaksi",
+                    name: "Transaksi",
+                    meta: {title: 'Transaksi'},
+                    component: importComponent('Transaksi'),
+                },
                 // Laporan
                 {
                     path: "/laporan",
