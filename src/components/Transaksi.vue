@@ -64,71 +64,92 @@
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialogStruk" max-width="400px">
+        <v-dialog v-model="dialogStruk" max-width="650px">
             <v-card>
-                <v-card>
-                    <div ref="document" style="width: 400px">
-                        <ul>
-                            <li>
-                                <img
-                                    class="mt-5"
-                                    :src="require('@/assets/logo_toko2.png')"
-                                    height="200px"
-                                />
-                            </li><hr>
+                <div id="printableArea">
+                    <v-card-text>
+                        <div style="float: right; width: 400px">
+                            <h1 style="text-align: center">ATMA KOREAN BBQ</h1>
+                            <h6 style="text-align: center">FUN PLACE TO GRILL!</h6>
+                            <h6 style="text-align: center">Jl. Babarsari No. 43 Yogyakarta</h6>
+                            <h6 style="text-align: center">552181</h6>
+                            <h6 style="text-align: center">Telp. (0274) 487711</h6>
+                        </div>
+                        <v-img
+                            :src="require('@/assets/logo_toko2.png')"
+                            max-width="200"
+                        />
+                        <p class="fontBottom mt-1 mb-1">
+                            -----------------------------------------------------------------------------------------
+                        </p>
+                        <p class="mt-0 font1 teksPosition">
+                            Receipt # {{ struk.receipt }} <br>Waiter {{ struk.waiter }}
+                        </p>
+                        <p class="mt-0 font1 teksPositionKanan1">
+                            Date {{ struk.date }} <br>Time {{ struk.time }}
+                        </p>
+                        <br><br><br>
+                        <p class="fontBottom">
+                            -----------------------------------------------------------------------------------------
+                        </p>
+                        <p class="mt-0 font1 teksPosition">Table # {{ struk.table }}</p>
+                        <p class="mt-0 font1 teksPositionKanan1">
+                            Customer {{ struk.customer }}
+                        </p>
+                        <br><br>
+                        <p class="fontBottom mt-1 mb-1">
+                            -----------------------------------------------------------------------------------------
+                        </p>
+                        <v-data-table
+                            :hide-default-footer="true"
+                            :headers="headersStruk"
+                            :items="detailPesanan"
+                            :search="search"
+                        >
+                            <template v-slot:[`item.harga_menu`]="{ item }">
+                                Rp. {{ item.harga_menu }}
+                            </template>
+                            <template v-slot:[`item.harga`]="{ item }">
+                                Rp. {{ item.harga }}
+                            </template>
+                        </v-data-table>
+                        <p class="fontBottom mt-1 mb-1">
+                            -----------------------------------------------------------------------------------------
+                        </p>
+                        <p class="mb-0 font2 teksHarga">
+                            Sub Total Rp.{{ subtotal_pesanan }}
+                        </p>
+                        <p class="mb-1 font2 teksHarga">
+                            Service 5% Rp.{{ service }}
+                        </p>
+                        <p class="mb-1 font2 teksHarga">Tax 10% Rp.{{ tax }}</p>
+                        <p class="fontBottom mt-1 mb-1">
+                            -----------------------------------------------------------------------------------------
+                        </p>
+                        <p class="mb-0 font2 teksHarga">
+                            Total Rp.{{ total_pesanan }}
+                        </p>
+                        <p class="fontBottom mt-1 mb-1">
+                            -----------------------------------------------------------------------------------------
+                        </p>
+                        <p class="mb-1 font3 teksHarga">Total Qty: {{ qty }}</p>
+                        <p class="mb-1 font3 teksHarga">
+                            Total Item: {{ total_item }}
+                        </p>
+                        <p class="mt-1 font3 teksHarga">Printed {{ hari_ini }}</p>
+                        <p class="fontBottom mt-1 mb-1"></p>
+                        <p class="mt-1 font3 teksHarga">Cashier: {{ nama }}</p>
+                        <p class="fontBottom mt-1 mb-1">
+                            -----------------------------------------------------------------------------------------
+                        </p>
+                        <p class="fontBottom mt-0 mb-0">THANK YOU FOR YOUR VISIT</p>
+                        <p class="fontBottom mt-1 mb-1">
+                            -----------------------------------------------------------------------------------------
+                        </p>
+                    </v-card-text>
+                </div>
 
-                            <li>
-                                <table>
-                                    <tr>
-                                        <td>Receipt # {{ transaksi.NOMOR_TRANSAKSI }}</td>
-                                        <td>Date {{ transaksi.TANGGAL_TRANSAKSI }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Waiter {{ transaksi.ID_KARYAWAN }}</td>
-                                        <td>Time {{ transaksi.WAKTU_TRANSAKSI }}</td>
-                                    </tr>
-                                </table>
-                            </li><hr>
-
-                            <li>
-                                <table>
-                                    <tr>
-                                        <td>Table # xxx</td>
-                                        <td>Customer xxx</td>
-                                    </tr>
-                                </table>
-                            </li>
-
-                            <li>
-                                <v-data-table
-                                :headers="headersDetailPesanan"
-                                :items="detailPesanan">
-                                </v-data-table>
-                            </li>
-
-                            <hr />
-                            <li>
-                                <h4 style="font-weight: bold">
-                                    FUN PLACE TO GRILL
-                                </h4>
-                            </li>
-                            <hr />
-                        </ul>
-                    </div>
-
-                    <div>
-                        <v-row justify="center">
-                            <v-btn
-                                small
-                                class="mr-2"
-                                @click="printQR()"
-                                color="green"
-                            >
-                                Print
-                            </v-btn>
-                        </v-row>
-                    </div>
-                </v-card>
+                <v-btn color="success" @click="printStruk('printableArea')">Print</v-btn>
             </v-card>
         </v-dialog>
     </v-main>
@@ -148,12 +169,12 @@ export default {
             search: null,
             loading: true,
             struk: {
-                nomor: '',
-                date: '',
-                waiter: '',
-                time: '',
-                table: '',
-                customer: '',
+                receipt: "",
+                date: "",
+                waiter: "",
+                time: "",
+                table: "",
+                customer: "",
             },
             transaksi: [],
             headers: [
@@ -190,21 +211,21 @@ export default {
             headersDetailPesanan: [
                 {
                     text: "ID Pesanan",
-                    value: "ID_PESANAN"
+                    value: "ID_PESANAN",
                 },
                 {
                     text: "ID Menu",
-                    value: "ID_MENU"
+                    value: "ID_MENU",
                 },
                 {
                     text: "Jumlah Item",
-                    value: "JUMLAH_ITEM_PESANAN"
+                    value: "JUMLAH_ITEM_PESANAN",
                 },
                 {
                     text: "Subtotal Item",
-                    value: "SUBTOTAL_ITEM_PESANAN"
+                    value: "SUBTOTAL_ITEM_PESANAN",
                 },
-            ]
+            ],
         };
     },
 
@@ -232,24 +253,38 @@ export default {
                 });
         },
         readDataDetailPesanan(idPesanan) {
-            var url = this.$api + '/detailPesanan/' + idPesanan
-            this.$http.get(url, {
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('current_token')
-                }
-            }).then(response => {
-                this.detailPesanan = response.data.data
-                this.dialogDetail = true
-            }).catch(error => {
-                this.dialogDetail = true
-                this.error_message = error.response.data.message;
-                this.color = "red"
-                this.snackbar = true;
-                this.load = false;
-            })
+            var url = this.$api + "/detailPesanan/" + idPesanan;
+            this.$http
+                .get(url, {
+                    headers: {
+                        Authorization:
+                            "Bearer " + localStorage.getItem("current_token"),
+                    },
+                })
+                .then((response) => {
+                    this.detailPesanan = response.data.data;
+                    this.dialogDetail = true;
+                })
+                .catch((error) => {
+                    this.dialogDetail = true;
+                    this.error_message = error.response.data.message;
+                    this.color = "red";
+                    this.snackbar = true;
+                    this.load = false;
+                });
         },
         showStrukHandler(item) {
-            this.dialogStruk = true
+            this.dialogStruk = true;
+        },
+        printStruk(divName) {
+            var printContents = document.getElementById(divName).innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+
+            window.print();
+
+            document.body.innerHTML = originalContents;
         }
     },
 
@@ -260,8 +295,46 @@ export default {
 </script>
 
 <style scoped>
-    ul {
-        list-style-type: none;
-        text-align: center;
-    }
+ul {
+    list-style-type: none;
+    text-align: center;
+}
+
+.teksPosition {
+    text-align: left;
+    float: left;
+}
+.teksPosition2 {
+    text-align: end;
+}
+.teksPositionKanan1 {
+    text-align: right;
+    float: right;
+}
+
+.teksHarga {
+    text-align: right;
+}
+
+.font1 {
+    font-family: "Fredoka One", cursive;
+    font-size: 18px;
+    color: black;
+}
+.font2 {
+    font-family: "Fredoka One", cursive;
+    font-size: 15px;
+    color: rgb(53, 52, 52);
+}
+.font3 {
+    font-family: "Fredoka One", cursive;
+    font-size: 12px;
+    color: rgb(53, 52, 52);
+}
+
+.fontBottom {
+    font-family: serif;
+    font-size: 18px;
+    text-align: center;
+}
 </style>
