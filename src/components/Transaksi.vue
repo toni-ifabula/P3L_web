@@ -102,7 +102,7 @@
                         </p>
                         <v-data-table
                             :hide-default-footer="true"
-                            :headers="headersStruk"
+                            :headers="headersDetailPesanan"
                             :items="detailPesanan"
                             :search="search"
                         >
@@ -179,16 +179,12 @@ export default {
             transaksi: [],
             headers: [
                 {
-                    text: "ID Transaksi",
-                    value: "ID_TRANSAKSI",
-                },
-                {
                     text: "ID Pesanan",
                     value: "ID_PESANAN",
                 },
                 {
-                    text: "ID Karyawan",
-                    value: "ID_KARYAWAN",
+                    text: "Cashier",
+                    value: "NAMA_KARYAWAN",
                 },
                 {
                     text: "Nomor Transaksi",
@@ -210,12 +206,12 @@ export default {
             detailPesanan: [],
             headersDetailPesanan: [
                 {
-                    text: "ID Pesanan",
-                    value: "ID_PESANAN",
+                    text: "Nama Menu",
+                    value: "NAMA_MENU"
                 },
                 {
-                    text: "ID Menu",
-                    value: "ID_MENU",
+                    text: "Harga Menu",
+                    value: "HARGA_MENU"
                 },
                 {
                     text: "Jumlah Item",
@@ -264,6 +260,7 @@ export default {
                 .then((response) => {
                     this.detailPesanan = response.data.data;
                     this.dialogDetail = true;
+                    console.log(this.detailPesanan);
                 })
                 .catch((error) => {
                     this.dialogDetail = true;
@@ -274,6 +271,7 @@ export default {
                 });
         },
         showStrukHandler(item) {
+            this.readDataDetailPesanan(item.ID_PESANAN)
             this.dialogStruk = true;
         },
         printStruk(divName) {

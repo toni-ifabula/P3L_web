@@ -185,14 +185,12 @@
         dialog: false,
         dialogConfirm: false,
         headers: [{
-            text: "ID Meja",
-            align: "start",
-            sortable: true,
-            value: "ID_MEJA"
+            text: "Nomor Meja",
+            value: "NOMOR_MEJA"
           },
           {
-            text: "ID Customer",
-            value: "ID_CUSTOMER"
+            text: "Nama Customer",
+            value: "NAMA_CUSTOMER"
           },
           {
             text: "Sesi",

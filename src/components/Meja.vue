@@ -107,10 +107,6 @@
         dialogConfirm: false,
         headers: [
           {
-            text: "ID Meja",
-            value: "ID_MEJA"
-          },
-          {
             text: "Nomor Meja",
             align: "start",
             sortable: true,

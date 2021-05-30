@@ -129,8 +129,8 @@
             value: "NAMA_MENU"
           },
           {
-            text: "ID Bahan",
-            value: "ID_STOK"
+            text: "Nama Bahan",
+            value: "NAMA_STOK"
           },
           {
             text: "Kategori",

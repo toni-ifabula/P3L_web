@@ -157,10 +157,6 @@
         dialogConfirm: false,
         headers: [
           {
-            text: "ID Stok Bahan",
-            value: "ID_STOK"
-          },
-          {
             text: "Nama Stok",
             align: "start",
             sortable: true,

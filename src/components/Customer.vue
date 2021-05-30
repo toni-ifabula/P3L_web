@@ -104,10 +104,6 @@
         dialogConfirm: false,
         headers: [
           {
-            text: "ID Customer",
-            value: "ID_CUSTOMER"
-          },
-          {
             text: "Nama Customer",
             align: "start",
             sortable: true,

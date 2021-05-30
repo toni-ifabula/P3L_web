@@ -42,35 +42,6 @@
         </v-data-table>
       </v-card>
 
-      <hr>
-
-      <p>Info Role</p>
-      <v-card max-width="200px">
-      <v-simple-table dense>
-        <template v-slot:default>
-          <thead>
-            <tr>
-              <th class="text-left">
-                ID Role
-              </th>
-              <th class="text-left">
-                Nama Role
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="item in infoRole"
-              :key="item.id"
-            >
-              <td>{{ item.id }}</td>
-              <td>{{ item.nama }}</td>
-            </tr>
-          </tbody>
-        </template>
-      </v-simple-table>
-      </v-card>
-
       <v-dialog v-model="dialog" max-width="600px" persistent>
         <v-card>
           <v-card-title>
@@ -191,8 +162,8 @@
             value: "NAMA_KARYAWAN"
           },
           {
-            text: "ID Role",
-            value: "ID_ROLE"
+            text: "Role",
+            value: "NAMA_ROLE"
           },
           {
             text: "Jenis Kelamin",
@@ -246,28 +217,6 @@
         teleponRules: [
           v => !!v || 'This field is required',
           v => (v && v.length >= 10 && v.length <= 12) || 'Nomor telepon harus 10-12 angka'
-        ],
-        infoRole: [
-          {
-            id: '1',
-            nama: 'Owner'
-          },
-          {
-            id: '2',
-            nama: 'Ops Manager'
-          },
-          {
-            id: '3',
-            nama: 'Waiter'
-          },
-          {
-            id: '4',
-            nama: 'Cashier'
-          },
-          {
-            id: '5',
-            nama: 'Chef'
-          }
         ],
         resignID: '',
         loading: true,

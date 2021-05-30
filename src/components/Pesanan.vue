@@ -126,16 +126,20 @@ export default {
             color: '',
             headers: [
                 {
-                    text: "ID Pesanan",
-                    value: "ID_PESANAN"
-                },
-                {
-                    text: "ID Karyawan",
-                    value: "ID_KARYAWAN"
-                },
-                {
                     text: "ID Reservasi",
                     value: "ID_RESERVASI"
+                },
+                {
+                    text: "Nama Customer",
+                    value: "NAMA_CUSTOMER"
+                },
+                {
+                    text: "Nomor Meja",
+                    value: "NOMOR_MEJA"
+                },
+                {
+                    text: "Waiter",
+                    value: "NAMA_KARYAWAN"
                 },
                 {
                     text: "Status",
@@ -163,12 +167,12 @@ export default {
             detailPesanan: [],
             headersDetail: [
                 {
-                    text: "ID Pesanan",
-                    value: "ID_PESANAN"
+                    text: "Nama Menu",
+                    value: "NAMA_MENU"
                 },
                 {
-                    text: "ID Menu",
-                    value: "ID_MENU"
+                    text: "Harga Menu",
+                    value: "HARGA_MENU"
                 },
                 {
                     text: "Jumlah Item",
