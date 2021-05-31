@@ -128,7 +128,7 @@ export default {
     },
 
     mounted() {
-      this.getNomorMeja();
+        this.getNomorMeja();
     },
 }
 </script>

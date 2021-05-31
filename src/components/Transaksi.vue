@@ -78,23 +78,24 @@
                         <v-img
                             :src="require('@/assets/logo_toko2.png')"
                             max-width="200"
+                            style="display:block;"
                         />
                         <p class="fontBottom mt-1 mb-1">
                             -----------------------------------------------------------------------------------------
                         </p>
                         <p class="mt-0 font1 teksPosition">
-                            Receipt # {{ struk.receipt }} <br>Waiter {{ struk.waiter }}
+                            Receipt # {{ struk.NOMOR_TRANSAKSI }} <br>Waiter {{ struk.NAMA_KARYAWAN }}
                         </p>
                         <p class="mt-0 font1 teksPositionKanan1">
-                            Date {{ struk.date }} <br>Time {{ struk.time }}
+                            Date {{ struk.TANGGAL_TRANSAKSI }} <br>Time {{ struk.WAKTU_TRANSAKSI }}
                         </p>
                         <br><br><br>
                         <p class="fontBottom">
                             -----------------------------------------------------------------------------------------
                         </p>
-                        <p class="mt-0 font1 teksPosition">Table # {{ struk.table }}</p>
+                        <p class="mt-0 font1 teksPosition">Table # {{ struk.NOMOR_MEJA }}</p>
                         <p class="mt-0 font1 teksPositionKanan1">
-                            Customer {{ struk.customer }}
+                            Customer {{ struk.NAMA_CUSTOMER }}
                         </p>
                         <br><br>
                         <p class="fontBottom mt-1 mb-1">
@@ -106,39 +107,39 @@
                             :items="detailPesanan"
                             :search="search"
                         >
-                            <template v-slot:[`item.harga_menu`]="{ item }">
-                                Rp. {{ item.harga_menu }}
+                            <template v-slot:[`item.HARGA_MENU`]="{ item }">
+                                Rp {{ item.HARGA_MENU }}
                             </template>
-                            <template v-slot:[`item.harga`]="{ item }">
-                                Rp. {{ item.harga }}
+                            <template v-slot:[`item.SUBTOTAL_ITEM_PESANAN`]="{ item }">
+                                Rp {{ item.SUBTOTAL_ITEM_PESANAN }}
                             </template>
                         </v-data-table>
                         <p class="fontBottom mt-1 mb-1">
                             -----------------------------------------------------------------------------------------
                         </p>
                         <p class="mb-0 font2 teksHarga">
-                            Sub Total Rp.{{ subtotal_pesanan }}
+                            Sub Total Rp {{ struk.SUBTOTAL_PESANAN }}
                         </p>
                         <p class="mb-1 font2 teksHarga">
-                            Service 5% Rp.{{ service }}
+                            Service 5% Rp {{ struk.SERVICE_PESANAN }}
                         </p>
-                        <p class="mb-1 font2 teksHarga">Tax 10% Rp.{{ tax }}</p>
+                        <p class="mb-1 font2 teksHarga">Tax 10% Rp {{ struk.TAX_PESANAN }}</p>
                         <p class="fontBottom mt-1 mb-1">
                             -----------------------------------------------------------------------------------------
                         </p>
                         <p class="mb-0 font2 teksHarga">
-                            Total Rp.{{ total_pesanan }}
+                            Total Rp {{ struk.TOTAL_PESANAN }}
                         </p>
                         <p class="fontBottom mt-1 mb-1">
                             -----------------------------------------------------------------------------------------
                         </p>
-                        <p class="mb-1 font3 teksHarga">Total Qty: {{ qty }}</p>
+                        <p class="mb-1 font3 teksHarga">Total Qty: {{ struk.TOTAL_JUMLAH_PESANAN }}</p>
                         <p class="mb-1 font3 teksHarga">
-                            Total Item: {{ total_item }}
+                            Total Item: {{ struk.TOTAL_ITEM_PESANAN }}
                         </p>
-                        <p class="mt-1 font3 teksHarga">Printed {{ hari_ini }}</p>
+                        <p class="mt-1 font3 teksHarga">Printed {{ dateTime }}</p>
                         <p class="fontBottom mt-1 mb-1"></p>
-                        <p class="mt-1 font3 teksHarga">Cashier: {{ nama }}</p>
+                        <p class="mt-1 font3 teksHarga">Cashier: {{ printedCashier }}</p>
                         <p class="fontBottom mt-1 mb-1">
                             -----------------------------------------------------------------------------------------
                         </p>
@@ -147,9 +148,17 @@
                             -----------------------------------------------------------------------------------------
                         </p>
                     </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="red darken-1" dark @click="dialogStruk = false">
+                            Close
+                        </v-btn>
+                        <v-btn color="green darken-1" dark @click="printStruk('printableArea')">
+                            Print
+                        </v-btn>
+                    </v-card-actions>
                 </div>
-
-                <v-btn color="success" @click="printStruk('printableArea')">Print</v-btn>
+                
             </v-card>
         </v-dialog>
     </v-main>
@@ -168,14 +177,7 @@ export default {
             color: "",
             search: null,
             loading: true,
-            struk: {
-                receipt: "",
-                date: "",
-                waiter: "",
-                time: "",
-                table: "",
-                customer: "",
-            },
+            struk: {},
             transaksi: [],
             headers: [
                 {
@@ -203,25 +205,28 @@ export default {
                     value: "actions",
                 },
             ],
+            cashierColumn: [],
             detailPesanan: [],
             headersDetailPesanan: [
                 {
-                    text: "Nama Menu",
-                    value: "NAMA_MENU"
-                },
-                {
-                    text: "Harga Menu",
-                    value: "HARGA_MENU"
-                },
-                {
-                    text: "Jumlah Item",
+                    text: "Qty Item",
                     value: "JUMLAH_ITEM_PESANAN",
                 },
                 {
-                    text: "Subtotal Item",
+                    text: "Item Menu",
+                    value: "NAMA_MENU"
+                },
+                {
+                    text: "Harga",
+                    value: "HARGA_MENU"
+                },
+                {
+                    text: "Subtotal",
                     value: "SUBTOTAL_ITEM_PESANAN",
                 },
             ],
+            printedCashier: '',
+            dateTime: '',
         };
     },
 
@@ -237,7 +242,13 @@ export default {
                     },
                 })
                 .then((response) => {
-                    this.transaksi = response.data.data;
+                    this.transaksi = response.data.dataTransaksi;
+
+                    // OVERRIDE CASHIER COLUMN
+                    for(var i=0; i<this.transaksi.length; i++) {
+                        this.transaksi[i].NAMA_KARYAWAN = response.data.namaCashier[i].NAMA_KARYAWAN
+                    }
+
                     this.loading = false;
                 })
                 .catch((error) => {
@@ -260,7 +271,6 @@ export default {
                 .then((response) => {
                     this.detailPesanan = response.data.data;
                     this.dialogDetail = true;
-                    console.log(this.detailPesanan);
                 })
                 .catch((error) => {
                     this.dialogDetail = true;
@@ -272,7 +282,26 @@ export default {
         },
         showStrukHandler(item) {
             this.readDataDetailPesanan(item.ID_PESANAN)
+            this.getStrukInfo(item.ID_TRANSAKSI)
+            this.getCurrentDateTime();
+            this.printedCashier = item.NAMA_KARYAWAN
             this.dialogStruk = true;
+        },
+        getStrukInfo(idTransaksi) {
+            var url = this.$api + '/transaksiStruk/' + idTransaksi;
+            this.$http.get(url, {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+                }
+            }).then(response => {
+                this.struk = response.data.data
+            }).catch(error => {
+                this.error_message = error.response.data.message;
+                this.color = "red"
+                this.snackbar = true;
+                this.load = false;
+                this.loading = false
+            })
         },
         printStruk(divName) {
             var printContents = document.getElementById(divName).innerHTML;
@@ -283,6 +312,15 @@ export default {
             window.print();
 
             document.body.innerHTML = originalContents;
+        },
+        getCurrentDateTime() {
+            var currentdate = new Date(); 
+            this.dateTime = currentdate.getDate() + "/"
+                            + (currentdate.getMonth()+1)  + "/" 
+                            + currentdate.getFullYear() + " @ "
+                            + currentdate.getHours() + ":"  
+                            + currentdate.getMinutes() + ":" 
+                            + currentdate.getSeconds();
         }
     },
 
