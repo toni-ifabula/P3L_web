@@ -209,7 +209,7 @@ export default {
             detailPesanan: [],
             headersDetailPesanan: [
                 {
-                    text: "Qty Item",
+                    text: "Qty",
                     value: "JUMLAH_ITEM_PESANAN",
                 },
                 {
