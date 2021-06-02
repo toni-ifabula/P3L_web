@@ -166,7 +166,7 @@ export default {
     methods: {
         checkForm() {
             if(this.$refs.form.validate()) {
-                bayar()
+                this.bayar()
             }
         },
         getNomorMeja() {
@@ -243,6 +243,7 @@ export default {
             }
             }).then(response => {
                 this.setPesananLunas(this.pesanan.ID_PESANAN)
+                this.setMejaKosong(this.pesanan.ID_MEJA)
                 this.$router.push('/transaksi')
                 this.error_message = response.data.message;
                 this.color = "green"
@@ -274,6 +275,25 @@ export default {
                 this.color = "red"
                 this.snackbar = true;
                 this.load = false;
+            })
+        },
+        setMejaKosong(idMeja) {
+            var url = this.$api + '/mejaKosong/' + idMeja;
+            this.$http.get(url, {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('current_token')
+                }
+            }).then(response => {
+                this.error_message = response.data.message;
+                this.color = "green"
+                this.snackbar = true;
+                this.load = false;
+            }).catch(error => {
+                this.error_message = error.response.data.message;
+                this.color = "red"
+                this.snackbar = true;
+                this.load = false;
+                this.loading = false
             })
         },
         setTime() {

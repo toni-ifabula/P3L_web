@@ -42,6 +42,8 @@
             <v-form ref="form">
               <v-text-field v-model="form.nama" label="Nama Stok Bahan" :rules="requiredRules" required></v-text-field>
 
+              <v-text-field v-model="form.serving" label="Serving Stok Bahan" type="number" :rules="requiredRules" required></v-text-field>
+
               <v-select
                 v-model="form.unit"
                 :items="unitItems"
@@ -116,9 +118,6 @@
 
               <v-text-field v-model="formDetail.incoming" label="Incoming Stok" type="number" :rules="requiredRules" required></v-text-field>
 
-              <v-text-field v-model="formDetail.remaining" label="Remaining Stok" type="number" :rules="requiredRules" required></v-text-field>
-
-              <v-text-field v-model="formDetail.waste" label="Waste Stok" type="number" :rules="requiredRules" required></v-text-field>
             </v-form>
           </v-container>
         </v-card-text>
@@ -163,6 +162,10 @@
             value: "NAMA_STOK"
           },
           {
+            text: "Serving",
+            value: "SERVING_STOK"
+          },
+          {
             text: "Unit",
             value: "UNIT_STOK"
           },
@@ -179,6 +182,7 @@
         stokBahan: [],
         form: {
           nama: null,
+          serving: null,
           unit: null,
           harga: null,
         },
@@ -219,9 +223,7 @@
         detailFormData: new FormData,
         formDetail: {
           tanggal: null,
-          incoming: null,
-          remaining: null,
-          waste: null,
+          incoming: null
         },
         DetailEditID: '',
         loading: true,
@@ -258,6 +260,7 @@
       //simpan data
       save() {
         this.stokFormData.append('NAMA_STOK', this.form.nama);
+        this.stokFormData.append('SERVING_STOK', this.form.serving);
         this.stokFormData.append('UNIT_STOK', this.form.unit);
         this.stokFormData.append('HARGA_STOK', this.form.harga);
 
@@ -286,6 +289,7 @@
       update() {
         let newData = {
           NAMA_STOK: this.form.nama,
+          SERVING_STOK: this.form.serving,
           UNIT_STOK: this.form.unit,
           HARGA_STOK: this.form.harga,
         }
@@ -315,6 +319,7 @@
         this.inputType = 'Ubah';
         this.editId = item.ID_STOK;
         this.form.nama = item.NAMA_STOK;
+        this.form.serving = item.SERVING_STOK;
         this.form.unit = item.UNIT_STOK;
         this.form.harga = item.HARGA_STOK;
         this.dialog = true;
@@ -332,6 +337,7 @@
       resetForm() {
         this.form = {
           nama: null,
+          serving: null,
           unit: null,
           harga: null,
         };
@@ -382,7 +388,7 @@
         this.detailFormData.append('TANGGAL_MASUK_STOK', this.formDetail.tanggal);
         this.detailFormData.append('INCOMING_STOK', this.formDetail.incoming);
         this.detailFormData.append('REMAINING_STOK', this.formDetail.incoming);
-        this.detailFormData.append('WASTE_STOK', this.formDetail.waste);
+        this.detailFormData.append('WASTE_STOK', this.formDetail.incoming);
 
         var url = this.$api + '/detailStok'
         this.load = true
