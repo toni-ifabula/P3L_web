@@ -105,7 +105,6 @@
                             :hide-default-footer="true"
                             :headers="headersDetailPesanan"
                             :items="detailPesanan"
-                            :search="search"
                         >
                             <template v-slot:[`item.HARGA_MENU`]="{ item }">
                                 Rp {{ item.HARGA_MENU }}
@@ -353,17 +352,14 @@ ul {
 }
 
 .font1 {
-    font-family: "Fredoka One", cursive;
     font-size: 18px;
     color: black;
 }
 .font2 {
-    font-family: "Fredoka One", cursive;
     font-size: 15px;
     color: rgb(53, 52, 52);
 }
 .font3 {
-    font-family: "Fredoka One", cursive;
     font-size: 12px;
     color: rgb(53, 52, 52);
 }
