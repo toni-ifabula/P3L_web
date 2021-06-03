@@ -268,7 +268,7 @@ export default {
         },
 
         haveAccess() {
-            if(localStorage.getItem("current_role") === '2' || localStorage.getItem("current_role") === '3')
+            if(localStorage.getItem("current_role") === '2' || localStorage.getItem("current_role") === '3' || localStorage.getItem("current_role") === '5')
                 return 1
             else
                 return 0

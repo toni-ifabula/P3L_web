@@ -431,7 +431,7 @@
       },
       showQR(item) {
         this.idReservasi = item.toString();
-        QRCode.toDataURL(this.idReservasi)
+        QRCode.toDataURL(this.idReservasi + ";" + localStorage.getItem("current_id"))
           .then(url => {
             this.qrURL = url;
           })
@@ -454,7 +454,7 @@
       printQR() {
         html2pdf(this.$refs.document, {
         margin: [0,2,0,0],
-        filename: "document.pdf",
+        filename: "QR Code.pdf",
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { dpi: 192, letterRendering: true },
         jsPDF: { unit: "in", format: "a4", orientation: "p" },

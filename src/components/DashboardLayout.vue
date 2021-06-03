@@ -55,6 +55,7 @@ export default {
         { title: "Dashboard", icon: "space_dashboard", to: "/dashboard" },
         { title: "Karyawan", icon: "badge", to: "/karyawan" },
         { title: "Meja", icon: "deck", to: "/meja" },
+        { title: "Laporan", icon: "summarize", to: "/laporan"},
       ],
       itemsManager: [
         { title: "Dashboard", icon: "space_dashboard", to: "/dashboard" },

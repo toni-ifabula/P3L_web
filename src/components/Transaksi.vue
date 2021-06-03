@@ -1,5 +1,7 @@
 <template>
     <v-main class="list">
+        <h3 class="text-h3 font-weight-medium mb-5"> Data Transaksi </h3>
+
         <v-card-title>
             <v-text-field
                 v-model="search"
@@ -66,11 +68,13 @@
 
         <v-dialog v-model="dialogStruk" max-width="650px">
             <v-card>
-                <div id="printableArea">
-                    <v-card-text>
+                <!-- <div ref="document"> -->
+                    <v-card-text ref="document">
                         <div style="float: right; width: 400px">
-                            <h1 style="text-align: center">ATMA KOREAN BBQ</h1>
-                            <h6 style="text-align: center">FUN PLACE TO GRILL!</h6>
+                            <h1 style="text-align: center; font-weight: bold">
+                                ATMA KOREAN BBQ
+                            </h1>
+                            <h6 style="text-align: center; color: red;">FUN PLACE TO GRILL!</h6>
                             <h6 style="text-align: center">Jl. Babarsari No. 43 Yogyakarta</h6>
                             <h6 style="text-align: center">552181</h6>
                             <h6 style="text-align: center">Telp. (0274) 487711</h6>
@@ -152,11 +156,11 @@
                         <v-btn color="red darken-1" dark @click="dialogStruk = false">
                             Close
                         </v-btn>
-                        <v-btn color="green darken-1" dark @click="printStruk('printableArea')">
+                        <v-btn color="green darken-1" dark @click="printStruk()">
                             Print
                         </v-btn>
                     </v-card-actions>
-                </div>
+                <!-- </div> -->
                 
             </v-card>
         </v-dialog>
@@ -164,6 +168,8 @@
 </template>
 
 <script>
+import html2pdf from 'html2pdf.js'
+
 export default {
     data() {
         return {
@@ -302,15 +308,14 @@ export default {
                 this.loading = false
             })
         },
-        printStruk(divName) {
-            var printContents = document.getElementById(divName).innerHTML;
-            var originalContents = document.body.innerHTML;
-
-            document.body.innerHTML = printContents;
-
-            window.print();
-
-            document.body.innerHTML = originalContents;
+        printStruk() {
+            html2pdf(this.$refs.document, {
+                margin: [0,2,0,0],
+                filename: "Transaksi.pdf",
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: { dpi: 192, letterRendering: true },
+                jsPDF: { unit: "in", format: "a4", orientation: "p" },
+            });
         },
         getCurrentDateTime() {
             var currentdate = new Date(); 
@@ -365,7 +370,6 @@ ul {
 }
 
 .fontBottom {
-    font-family: serif;
     font-size: 18px;
     text-align: center;
 }

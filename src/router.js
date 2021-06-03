@@ -100,6 +100,34 @@ const router = new VueRouter({
                     meta: {title: 'Laporan'},
                     component: importComponent('Laporan'),
                 },
+                // Laporan Stok
+                {
+                    path: "/laporanStok",
+                    name: "LaporanStok",
+                    meta: {title: 'LaporanStok'},
+                    component: importComponent('LaporanStok'),
+                },
+                // Laporan Penjualan
+                {
+                    path: "/laporanPenjualan",
+                    name: "LaporanPenjualan",
+                    meta: {title: 'LaporanPenjualan'},
+                    component: importComponent('LaporanPenjualan'),
+                },
+                // Laporan Pendapatan
+                {
+                    path: "/laporanPendapatan",
+                    name: "LaporanPendapatan",
+                    meta: {title: 'LaporanPendapatan'},
+                    component: importComponent('LaporanPendapatan'),
+                },
+                // Laporan Pengeluaran
+                {
+                    path: "/laporanPengeluaran",
+                    name: "LaporanPengeluaran",
+                    meta: {title: 'LaporanPengeluaran'},
+                    component: importComponent('LaporanPengeluaran'),
+                },
             ],
             beforeEnter: (to, from, next) => {
                 if(localStorage.getItem("current_token") == null) {
